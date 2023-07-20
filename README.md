@@ -14,3 +14,6 @@
     ```
     `./build.sh`
     ```
+    
+# Dependencies
+- keccak sourced from `https://github.com/AztecProtocol/barretenberg.git`
