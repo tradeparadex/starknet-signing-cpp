@@ -1,12 +1,22 @@
 #include <iostream>
+#include "utils.hpp"
 
 #include "starkware/crypto/ecdsa.h"
 #include "starkware/algebra/prime_field_element.h"
 #include "starkware/crypto/elliptic_curve_constants.h"
+#include "starkware/crypto/pedersen_hash.h"
 
 int main()
 {
     using namespace starkware;
+
+    const PrimeFieldElement zero = PrimeFieldElement::Zero();
+    const PrimeFieldElement val = PrimeFieldElement::FromBigInt(0x537461726B4E6574204D657373616765_Z);
+    const PrimeFieldElement res = PedersenHash(zero, val);
+
+    std::cout << "res: " << res << std::endl;
+    std::cout << "my res: " << signer::hashElements({val}) << std::endl;
+
     const BigInt<4UL> private_key = 0x3c1e9550e66958296d11b60f8e8e7a7ad990d07fa65d5f7652c4a6c87d4e3cc_Z;
     const EcPoint<PrimeFieldElement> public_key(
         PrimeFieldElement::FromBigInt(
