@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include "Utils.hpp"
 #include "UtilsImpl.hpp"
 
 #include "starkware/crypto/ecdsa.h"
@@ -82,9 +81,9 @@ int main()
     std::cout << std::endl;
 
     {
-        static constexpr char* str = "StarkNetDomain(name:felt,chainId:felt,version:felt)";
-        constexpr size_t kek = std::char_traits< char >::length( str );
-        auto newArr = signer::strToUint64Array< kek >( str );
+        static constexpr char* kekStr = "StarkNetDomain(name:felt,chainId:felt,version:felt)";
+        constexpr size_t kek = std::char_traits< char >::length( kekStr );
+        auto newArr = signer::strToUint64Array< kek >( kekStr );
         for( int i = 0; i < newArr.size(); i++ )
         {
             std::cout << newArr[ i ] << " ";

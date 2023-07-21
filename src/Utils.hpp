@@ -55,6 +55,7 @@ BigInt< std::min( N, M ) > operator&( const BigInt< N >& a, const BigInt< M >& b
 template< size_t N >
 constexpr std::array< uint64_t, N > bigIntToArray( const BigInt< N >& value );
 
+/// string shall be supplied in ascii encoding
 template< size_t StrLen >
 std::array< uint64_t, StrToUint64Len< StrLen >::value > strToUint64Array( const char* str );
 

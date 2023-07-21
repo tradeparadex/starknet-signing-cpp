@@ -113,9 +113,9 @@ BigInt< 4 > getSelectorFromName( const BigInt< N >& value )
 }
 
 template< size_t StrLen >
-std::array< uint64_t, StrToUint64Len< StrLen >::Value > strToUint64Array( const char* str )
+std::array< uint64_t, StrToUint64Len< StrLen >::value > strToUint64Array( const char* str )
 {
-    constexpr size_t len64 = StrToUint64Len< StrLen >::Value;
+    constexpr size_t len64 = StrToUint64Len< StrLen >::value;
     constexpr uint8_t numIterations = sizeof( uint64_t ) / sizeof( char );
 
     std::array< uint64_t, len64 > arr = { { 0 } };
