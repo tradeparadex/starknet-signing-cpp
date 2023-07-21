@@ -1,5 +1,7 @@
 #include <iostream>
-#include "utils.hpp"
+#include <string>
+#include "Utils.hpp"
+#include "UtilsImpl.hpp"
 
 #include "starkware/crypto/ecdsa.h"
 #include "starkware/algebra/prime_field_element.h"
@@ -34,19 +36,65 @@ int dummyCryptoCppTest()
 
 int dummyKeccakTest()
 {
-    using namespace starkware;
-
-
-    // 98D1932052FC5137543DE5ED85B7A88555A4CD1FF5D5BFEDB62ED9B9A1F0DB
-    const char* strStarknetDomain = "StarkNetDomain(name:felt,chainId:felt,version:felt)";
-    const auto res = signer::getSelectorFromName(strStarknetDomain, strlen(strStarknetDomain));
-    std::cout << res << std::endl;
-
-    return 0;
+//    using namespace starkware;
+//
+//    // 98D1932052FC5137543DE5ED85B7A88555A4CD1FF5D5BFEDB62ED9B9A1F0DB
+//    static constexpr char* strStarknetDomain = "StarkNetDomain(name:felt,chainId:felt,version:felt)";
+//    const auto res = signer::getSelectorFromName(strStarknetDomain, strlen(strStarknetDomain));
+//
+//    constexpr size_t asd = std::char_traits<char>::length(strStarknetDomain);
+//    auto ll = signer::charToBigInt<asd>(strStarknetDomain);
+//
+//    std::cout << signer::getSelectorFromName(ll) << std::endl;
+//    std::cout << res << std::endl;
+//
+//    return 0;
 }
-
 
 int main()
 {
-    return dummyCryptoCppTest() | dummyKeccakTest();
+    constexpr const char* str = "Hello";
+    uint64_t arr[5] = {0,0,0,0,0};
+    for(int i = 0; i < 5; i++)
+    {
+        std::cout << arr[i] << " ";
+    }
+
+    std::cout << std::endl;
+
+    std::memcpy(arr, (uint64_t*) str, sizeof  arr);
+    for(int i = 0; i < 5; i++)
+    {
+        std::cout << arr[i] << " ";
+    }
+
+    std::cout << std::endl;
+
+    {
+        constexpr size_t kek = std::char_traits< char >::length( str );
+        auto newArr = signer::strToUint64Array< kek >( str );
+        for( int i = 0; i < newArr.size(); i++ )
+        {
+            std::cout << newArr[ i ] << " ";
+        }
+    }
+
+    std::cout << std::endl;
+
+    {
+        static constexpr char* str = "StarkNetDomain(name:felt,chainId:felt,version:felt)";
+        constexpr size_t kek = std::char_traits< char >::length( str );
+        auto newArr = signer::strToUint64Array< kek >( str );
+        for( int i = 0; i < newArr.size(); i++ )
+        {
+            std::cout << newArr[ i ] << " ";
+        }
+
+        std::cout << std::endl;
+
+        std::cout << starkware::BigInt(newArr) << std::endl;
+    }
+
+    return 0;
+    //return dummyCryptoCppTest() | dummyKeccakTest();
 }
