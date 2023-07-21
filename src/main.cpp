@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "UtilsImpl.hpp"
+#include "StarknetDomain.hpp"
 
 #include "starkware/crypto/ecdsa.h"
 #include "starkware/algebra/prime_field_element.h"
@@ -8,6 +9,8 @@
 
 int dummyCryptoCppTest()
 {
+    std::cout << "dummyCryptoCppTest" << std::endl;
+
     using namespace starkware;
 
     const PrimeFieldElement zero = PrimeFieldElement::Zero();
@@ -35,65 +38,39 @@ int dummyCryptoCppTest()
 
 int dummyKeccakTest()
 {
-//    using namespace starkware;
-//
-//    // 98D1932052FC5137543DE5ED85B7A88555A4CD1FF5D5BFEDB62ED9B9A1F0DB
-//    static constexpr char* strStarknetDomain = "StarkNetDomain(name:felt,chainId:felt,version:felt)";
-//    const auto res = signer::getSelectorFromName(strStarknetDomain, strlen(strStarknetDomain));
-//
-//    constexpr size_t asd = std::char_traits<char>::length(strStarknetDomain);
-//    auto ll = signer::charToBigInt<asd>(strStarknetDomain);
-//
-//    std::cout << signer::getSelectorFromName(ll) << std::endl;
-//    std::cout << res << std::endl;
-//
-//    return 0;
+    std::cout << "dummyKeccakTest" << std::endl;
+    using namespace starkware;
+
+    // 98D1932052FC5137543DE5ED85B7A88555A4CD1FF5D5BFEDB62ED9B9A1F0DB
+    static constexpr char const* strStarknetDomain = "StarkNetDomain(name:felt,chainId:felt,version:felt)";
+    const auto res = signer::getSelectorFromName(strStarknetDomain, strlen(strStarknetDomain));
+
+    constexpr size_t len = std::char_traits<char>::length(strStarknetDomain);
+    auto ll = signer::strToBigInt<len>(strStarknetDomain);
+
+    std::cout << signer::getSelectorFromName( ll) << std::endl;
+    std::cout << res << std::endl;
+
+    return 0;
 }
+
+int domainHashCheck()
+{
+    std::cout << "domainHashCheck" << std::endl;
+
+    using namespace starkware;
+
+    const BigInt<4> chainId = 0x505249564154455F534E5F504F54435F474F45524C49_Z;
+    signer::StarknetDomain domain(chainId);
+
+    PrimeFieldElement res = signer::hashElements( domain.pedersenEncode());
+    std::cout << res << std::endl;
+
+    return 0;
+}
+
 
 int main()
 {
-    constexpr const char* str = "Hello";
-    uint64_t arr[5] = {0,0,0,0,0};
-    for(int i = 0; i < 5; i++)
-    {
-        std::cout << arr[i] << " ";
-    }
-
-    std::cout << std::endl;
-
-    std::memcpy(arr, (uint64_t*) str, sizeof  arr);
-    for(int i = 0; i < 5; i++)
-    {
-        std::cout << arr[i] << " ";
-    }
-
-    std::cout << std::endl;
-
-    {
-        constexpr size_t kek = std::char_traits< char >::length( str );
-        auto newArr = signer::strToUint64Array< kek >( str );
-        for( int i = 0; i < newArr.size(); i++ )
-        {
-            std::cout << newArr[ i ] << " ";
-        }
-    }
-
-    std::cout << std::endl;
-
-    {
-        static constexpr char* kekStr = "StarkNetDomain(name:felt,chainId:felt,version:felt)";
-        constexpr size_t kek = std::char_traits< char >::length( kekStr );
-        auto newArr = signer::strToUint64Array< kek >( kekStr );
-        for( int i = 0; i < newArr.size(); i++ )
-        {
-            std::cout << newArr[ i ] << " ";
-        }
-
-        std::cout << std::endl;
-
-        std::cout << starkware::BigInt(newArr) << std::endl;
-    }
-
-    return 0;
-    //return dummyCryptoCppTest() | dummyKeccakTest();
+    return dummyCryptoCppTest() | dummyKeccakTest() | domainHashCheck();
 }

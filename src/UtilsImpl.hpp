@@ -1,5 +1,6 @@
 #pragma once
 
+#include "keccak.hpp"
 #include "Utils.hpp"
 
 namespace signer
@@ -68,22 +69,19 @@ BigInt< std::min( N, M ) > operator&( const BigInt< N >& a, const BigInt< M >& b
 }
 
 template< size_t StrLen >
-constexpr BigInt< StrToUint64Len< StrLen >::value > charToBigInt( const char* str )
+BigInt< StrToUint64Len< StrLen >::value > strToBigInt( const char* str )
 {
     constexpr size_t numLimbsCount = StrToUint64Len< StrLen >::value;
-    // uint64_t* castedStr = (uint64_t*) str;
-    constexpr uint64_t arr[ numLimbsCount ] = (uint64_t*)str;
+    const auto uint64Array = strToUint64Array< StrLen >( str );
 
-    const auto asd = to_array< uint64_t, numLimbsCount >( arr );
-
-    return BigInt< numLimbsCount >( asd );
+    return BigInt< numLimbsCount >( uint64Array );
 }
 
 template< size_t N >
-constexpr BigInt< 4 > bigIntToUint256( const BigInt< N >& value )
+BigInt< 4 > bigIntToUint256( const BigInt< N >& value )
 {
     constexpr size_t numUint256Limbs = 4;
-    constexpr std::array< uint64_t, numUint256Limbs > limbs = { 0, 0, 0, 0 };
+    std::array< uint64_t, numUint256Limbs > limbs = { 0, 0, 0, 0 };
 
     for( size_t i = 0; i < std::min( N, numUint256Limbs ); ++i )
     {
@@ -108,7 +106,11 @@ constexpr std::array< uint64_t, N > bigIntToArray( const BigInt< N >& value )
 template< size_t N >
 BigInt< 4 > getSelectorFromName( const BigInt< N >& value )
 {
-    const uint64_t* limbs = bigIntToArray( value ).data();
+    constexpr BigInt< 4 > numMask = 0x3ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff_Z;
+
+    const std::array< uint64_t, N > bigIntArray = bigIntToArray( value );
+    const uint64_t* limbs = bigIntArray.data();
+
     return getSelectorFromName( (const char*)limbs, N * sizeof( uint64_t ) );
 }
 

@@ -34,11 +34,8 @@ BigInt< 4 > getSelectorFromName( const char* name, size_t len );
 template< size_t N >
 BigInt< 4 > getSelectorFromName( const BigInt< N >& value );
 
-template< size_t StrLen >
-constexpr BigInt< StrToUint64Len< StrLen >::value > charToBigInt( const char* str );
-
 template< size_t N >
-constexpr BigInt< 4 > bigIntToUint256( const BigInt< N >& value );
+BigInt< 4 > bigIntToUint256( const BigInt< N >& value );
 
 template< class T, std::size_t N >
 constexpr std::array< std::remove_cv_t< T >, N > to_array( T ( &a )[ N ] );
@@ -54,6 +51,9 @@ BigInt< std::min( N, M ) > operator&( const BigInt< N >& a, const BigInt< M >& b
 
 template< size_t N >
 constexpr std::array< uint64_t, N > bigIntToArray( const BigInt< N >& value );
+
+template< size_t StrLen >
+BigInt< StrToUint64Len< StrLen >::value > strToBigInt( const char* str );
 
 /// string shall be supplied in ascii encoding
 template< size_t StrLen >
