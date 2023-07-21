@@ -20,6 +20,7 @@ PrimeFieldElement StarknetDomain::hash() const
     // TODO
     return PrimeFieldElement::Zero();
 }
+
 std::vector< starkware::PrimeFieldElement > StarknetDomain::pedersenEncode() const
 {
     static constexpr char const* strStarknetDomain = "StarkNetDomain(name:felt,chainId:felt,version:felt)";

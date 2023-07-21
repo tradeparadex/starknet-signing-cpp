@@ -69,7 +69,6 @@ int domainHashCheck()
     return 0;
 }
 
-
 int main()
 {
     return dummyCryptoCppTest() | dummyKeccakTest() | domainHashCheck();
