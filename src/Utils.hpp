@@ -16,7 +16,7 @@ using namespace starkware;
 template< size_t StrLen >
 struct StrToUint64Len
 {
-    static constexpr size_t value = ( sizeof( char ) * StrLen + sizeof( uint64_t ) ) / sizeof( uint64_t );
+    static constexpr size_t value = ( sizeof( char ) * StrLen + sizeof( uint64_t ) - 1 ) / sizeof( uint64_t );
 };
 
 /*
@@ -45,6 +45,8 @@ constexpr T swapEndian( T u );
 
 template< size_t N >
 constexpr BigInt< N > swapEndian( const BigInt< N >& val );
+
+constexpr void swapEndian(uint64_t* dest, size_t destLen);
 
 template< size_t N, size_t M >
 BigInt< std::min( N, M ) > operator&( const BigInt< N >& a, const BigInt< M >& b );

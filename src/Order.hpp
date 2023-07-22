@@ -38,6 +38,8 @@ class Order
 
     Uint256 getChainPrice() const;
 
+    void setTimestamp(std::chrono::milliseconds value);
+
   private:
     std::chrono::milliseconds timestamp;
     std::string market;

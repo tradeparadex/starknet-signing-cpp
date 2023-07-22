@@ -8,35 +8,6 @@
 #include "starkware/algebra/prime_field_element.h"
 #include "starkware/crypto/pedersen_hash.h"
 
-int dummyCryptoCppTest()
-{
-    std::cout << "dummyCryptoCppTest" << std::endl;
-
-    using namespace starkware;
-
-    const PrimeFieldElement zero = PrimeFieldElement::Zero();
-    const PrimeFieldElement val = PrimeFieldElement::FromBigInt( 0x537461726B4E6574204D657373616765_Z );
-    const PrimeFieldElement res = PedersenHash( zero, val );
-
-    std::cout << "res: " << res << std::endl;
-    std::cout << "my res: " << signer::hashElements( { val } ) << std::endl;
-
-    const BigInt< 4UL > private_key = 0x3c1e9550e66958296d11b60f8e8e7a7ad990d07fa65d5f7652c4a6c87d4e3cc_Z;
-    const EcPoint< PrimeFieldElement > public_key(
-        PrimeFieldElement::FromBigInt( 0x77a3b314db07c45076d11f62b6f9e748a39790441823307743cf00d6597ea43_Z ),
-        PrimeFieldElement::FromBigInt( 0x54d7beec5ec728223671c627557efc5c9a6508425dc6c900b7741bf60afec06_Z ) );
-
-    if( public_key == GetPublicKey( private_key ) )
-    {
-        return 0;
-    }
-    else
-    {
-        return 1;
-    }
-
-}
-
 int dummyKeccakTest()
 {
     std::cout << "dummyKeccakTest" << std::endl;
@@ -45,11 +16,6 @@ int dummyKeccakTest()
     // 98D1932052FC5137543DE5ED85B7A88555A4CD1FF5D5BFEDB62ED9B9A1F0DB
     static constexpr char const* strStarknetDomain = "StarkNetDomain(name:felt,chainId:felt,version:felt)";
     const auto res = signer::getSelectorFromName(strStarknetDomain, strlen(strStarknetDomain));
-
-    constexpr size_t len = std::char_traits<char>::length(strStarknetDomain);
-    auto ll = signer::strToBigInt<len>(strStarknetDomain);
-
-    std::cout << signer::getSelectorFromName( ll) << std::endl;
     std::cout << res << std::endl;
 
     return 0;
@@ -64,6 +30,7 @@ int domainHashCheck()
     const BigInt< 4 > chainId = 0x505249564154455F534E5F504F54435F474F45524C49_Z;
     signer::StarknetDomain domain( chainId );
 
+    // 0x6A9F6F5D2B1C9AD4528A1EB8F357FC7E51F5C01AD09120D46075023164BD1C4
     PrimeFieldElement res = signer::hashElements( domain.pedersenEncode() );
     std::cout << res << std::endl;
 
@@ -76,30 +43,25 @@ int orderHashCheck()
 
     using namespace starkware;
     using namespace signer;
+    using namespace std::chrono;
 
-    const char const* strMarket = "ETH-USD-PERP";
+    const char* strMarket = "ETH-USD-PERP";
     constexpr OrderType orderType = OrderType::Market;
     constexpr OrderSide orderSide = OrderSide::Buy;
     constexpr double size = 0.1;
 
-
-    const Order order(strMarket, orderSide, orderType, size);
+    Order order(strMarket, orderSide, orderType, size);
+    order.setTimestamp(1690026783853ms);
     const auto encoded = order.pedersenEncode();
-    for (const auto& el : encoded)
-    {
-        std::cout << el << " ";
-    }
 
-    std::cout << std::endl;
-
+    // 0x059b1e79c5b2a6fc4df453515ebeceb51532ed20104c67ed3414b6671f1769a7
     const PrimeFieldElement hash = hashElements(encoded);
     std::cout << "order hash: " << hash << std::endl;
 
     return 0;
 }
 
-
 int main()
 {
-    return dummyCryptoCppTest() | dummyKeccakTest() | domainHashCheck() | orderHashCheck();
+    return dummyKeccakTest() | domainHashCheck() | orderHashCheck();
 }

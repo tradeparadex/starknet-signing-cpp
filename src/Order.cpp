@@ -78,10 +78,19 @@ Order::Uint256 Order::getChainPrice() const
     return limitPrice.value();
 }
 
+void Order::setTimestamp(std::chrono::milliseconds value)
+{
+    timestamp = value;
+}
+
 std::vector< starkware::PrimeFieldElement > Order::pedersenEncode() const
 {
     using namespace starkware;
 
+    const char const* strOrderTypeName = "Order(timestamp:felt,market:felt,side:felt,orderType:felt,size:felt,price:felt)";
+
+    const BigInt< 4 > tmpOrderTypeName = signer::getSelectorFromName( strOrderTypeName, strlen( strOrderTypeName ) );
+    const PrimeFieldElement orderTypeName = PrimeFieldElement::FromBigInt( tmpOrderTypeName );
     const PrimeFieldElement timestamp = PrimeFieldElement::FromUint( this->timestamp.count() );
     const PrimeFieldElement market = signer::strToFelt( this->market.c_str(), this->market.length() );
     const PrimeFieldElement chainSide = encodeChainSide( this->orderSide );
@@ -89,7 +98,7 @@ std::vector< starkware::PrimeFieldElement > Order::pedersenEncode() const
     const PrimeFieldElement chainSize = PrimeFieldElement::FromUint( size * 100000000 );
     const PrimeFieldElement chainPrice = PrimeFieldElement::FromBigInt( getChainPrice() );
 
-    return { timestamp, market, chainSide, orderType, chainSize, chainPrice };
+    return { orderTypeName, timestamp, market, chainSide, orderType, chainSize, chainPrice };
 }
 
 } // namespace signer

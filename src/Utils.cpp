@@ -36,32 +36,49 @@ PrimeFieldElement strToFelt( const char* str, size_t len )
     std::array< uint64_t, 4 > limbs = { 0, 0, 0, 0 };
     strToUint64ArrayImpl( str, len, limbs.data(), limbs.size() );
 
-    const auto feltBig = BigInt( limbs );
-    const auto feltBigR = BigInt( limbs );
-
-    std::cout << "feltBig: "<< feltBig << std::endl;
-    std::cout << "feltBigR: "<< swapEndian(feltBig) << std::endl;
-
-    return PrimeFieldElement::FromBigInt( feltBig );
+    return PrimeFieldElement::FromBigInt( BigInt( limbs ) );
 }
 
 void strToUint64ArrayImpl( const char* src, size_t srcLen, uint64_t* dest, size_t destLen )
 {
+    static_assert( CHAR_BIT == 8, "CHAR_BIT != 8" );
+
     constexpr uint8_t numIterations = sizeof( uint64_t ) / sizeof( char );
 
-    int counter = 0;
-    for( int i = 0; i >= 0; --i )
+    size_t len = srcLen;
+    for( uint i = 0; i < destLen; i++ )
     {
-        int charCounter = 0;
-        while( counter < srcLen && charCounter < numIterations )
+        uint8_t charCounter = 0;
+        while( len != 0 && charCounter != numIterations )
         {
-            dest[ i ] <<= sizeof( char ) * 8;
-            dest[ i ] |= ( uint64_t ) * ( src + counter );
+            const uint64_t currentChar = (uint64_t)*(src + len - 1);
+            dest[ i ] |= currentChar << CHAR_BIT * charCounter;
 
-            ++charCounter;
-            ++counter;
+            charCounter++;
+            len--;
         }
     }
 }
 
-} //
+constexpr void swapEndian( uint64_t* arr, size_t len )
+{
+    if( len == 0 )
+    {
+        return;
+    }
+
+    size_t start = 0;
+    size_t end = len - 1;
+
+    while( start < end )
+    {
+        uint64_t temp = arr[ start ];
+        arr[ start ] = swapEndian( arr[ end ] );
+        arr[ end ] = swapEndian( temp );
+
+        start++;
+        end--;
+    }
+}
+
+} // signer
