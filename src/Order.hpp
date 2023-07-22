@@ -4,6 +4,8 @@
 #include <chrono>
 #include <string>
 
+#include "HashableIface.hpp"
+
 #include <starkware/algebra/prime_field_element.h>
 
 namespace signer
@@ -25,7 +27,7 @@ enum OrderType
 
 starkware::PrimeFieldElement encodeOrderType( OrderType value );
 
-class Order
+class Order: public HashableIface
 {
   public:
     using Uint256 = starkware::PrimeFieldElement::ValueType;
@@ -34,7 +36,7 @@ class Order
     Order( const std::string& theMarket, OrderSide theOrderSide, OrderType theOrderType, double theSize,
         const std::optional< Uint256 >& theLimitPrice = std::nullopt);
 
-    std::vector< starkware::PrimeFieldElement > pedersenEncode() const;
+    virtual std::vector< starkware::PrimeFieldElement > pedersenEncode() const override;
 
     Uint256 getChainPrice() const;
 

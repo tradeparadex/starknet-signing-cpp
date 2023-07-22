@@ -21,14 +21,21 @@ int dummyKeccakTest()
     return 0;
 }
 
+signer::StarknetDomain getDomain()
+{
+    using namespace starkware;
+
+    const BigInt< 4 > chainId = 0x505249564154455F534E5F504F54435F474F45524C49_Z;
+    signer::StarknetDomain domain( chainId );
+}
+
 int domainHashCheck()
 {
     std::cout << "domainHashCheck" << std::endl;
 
     using namespace starkware;
 
-    const BigInt< 4 > chainId = 0x505249564154455F534E5F504F54435F474F45524C49_Z;
-    signer::StarknetDomain domain( chainId );
+    signer::StarknetDomain domain = getDomain();
 
     // 0x6A9F6F5D2B1C9AD4528A1EB8F357FC7E51F5C01AD09120D46075023164BD1C4
     PrimeFieldElement res = signer::hashElements( domain.pedersenEncode() );
@@ -37,11 +44,8 @@ int domainHashCheck()
     return 0;
 }
 
-int orderHashCheck()
+signer::Order getOrder()
 {
-    std::cout << "orderHashCheck" << std::endl;
-
-    using namespace starkware;
     using namespace signer;
     using namespace std::chrono;
 
@@ -52,6 +56,19 @@ int orderHashCheck()
 
     Order order(strMarket, orderSide, orderType, size);
     order.setTimestamp(1690026783853ms);
+
+    return order;
+}
+
+
+int orderHashCheck()
+{
+    std::cout << "orderHashCheck" << std::endl;
+
+    using namespace starkware;
+    using namespace signer;
+
+    Order order = getOrder();
     const auto encoded = order.pedersenEncode();
 
     // 0x059b1e79c5b2a6fc4df453515ebeceb51532ed20104c67ed3414b6671f1769a7
@@ -60,6 +77,12 @@ int orderHashCheck()
 
     return 0;
 }
+
+int messageHashCheck()
+{
+    
+}
+
 
 int main()
 {

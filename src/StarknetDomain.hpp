@@ -1,12 +1,14 @@
 #pragma once
 #include <string>
 
+#include "HashableIface.hpp"
+
 #include <starkware/algebra/prime_field_element.h>
 
 namespace signer
 {
 
-class StarknetDomain
+class StarknetDomain: public HashableIface
 {
   public:
     using Uint256 = starkware::PrimeFieldElement::ValueType;
@@ -14,10 +16,7 @@ class StarknetDomain
     explicit StarknetDomain( const Uint256& chainId );
     explicit StarknetDomain( const starkware::PrimeFieldElement& chainId );
 
-    starkware::PrimeFieldElement hash() const;
-
-    // Encoding only suitable for Pedersen hash.
-    std::vector< starkware::PrimeFieldElement > pedersenEncode() const;
+    virtual std::vector< starkware::PrimeFieldElement > pedersenEncode() const override;
 
   private:
     // Those types are contant for Order & Auth
