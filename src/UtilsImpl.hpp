@@ -51,7 +51,24 @@ constexpr BigInt< N > swapEndian( const BigInt< N >& val )
         arr[ N - i - 1 ] = swapEndian( val[ i ] );
     }
 
-    return BigInt< N >( arr );
+    return BigInt<N>(arr);
+//
+//    if ( N == 0 )
+//    {
+//        return;
+//    }
+//
+//    int start = 0;
+//    int end = N - 1;
+//
+//    while (start < end) {
+//        int temp = arr[start];
+//        arr[start] = swapEndian(arr[end]);
+//        arr[end] = swapEndian(temp);
+//
+//        start++;
+//        end--;
+//    }
 }
 
 template< size_t N, size_t M >
