@@ -55,8 +55,12 @@ constexpr std::array< uint64_t, N > bigIntToArray( const BigInt< N >& value );
 template< size_t StrLen >
 BigInt< StrToUint64Len< StrLen >::value > strToBigInt( const char* str );
 
+PrimeFieldElement strToFelt(const char* str, size_t len);
+
 /// string shall be supplied in ascii encoding
 template< size_t StrLen >
 std::array< uint64_t, StrToUint64Len< StrLen >::value > strToUint64Array( const char* str );
+
+void strToUint64ArrayImpl(const char* src, size_t srcLen, uint64_t* dest, size_t destLen);
 
 }

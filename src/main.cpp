@@ -2,6 +2,7 @@
 #include <string>
 #include "UtilsImpl.hpp"
 #include "StarknetDomain.hpp"
+#include "Order.hpp"
 
 #include "starkware/crypto/ecdsa.h"
 #include "starkware/algebra/prime_field_element.h"
@@ -60,16 +61,45 @@ int domainHashCheck()
 
     using namespace starkware;
 
-    const BigInt<4> chainId = 0x505249564154455F534E5F504F54435F474F45524C49_Z;
-    signer::StarknetDomain domain(chainId);
+    const BigInt< 4 > chainId = 0x505249564154455F534E5F504F54435F474F45524C49_Z;
+    signer::StarknetDomain domain( chainId );
 
-    PrimeFieldElement res = signer::hashElements( domain.pedersenEncode());
+    PrimeFieldElement res = signer::hashElements( domain.pedersenEncode() );
     std::cout << res << std::endl;
 
     return 0;
 }
 
+int orderHashCheck()
+{
+    std::cout << "orderHashCheck" << std::endl;
+
+    using namespace starkware;
+    using namespace signer;
+
+    const char const* strMarket = "ETH-USD-PERP";
+    constexpr OrderType orderType = OrderType::Market;
+    constexpr OrderSide orderSide = OrderSide::Buy;
+    constexpr double size = 0.1;
+
+
+    const Order order(strMarket, orderSide, orderType, size);
+    const auto encoded = order.pedersenEncode();
+    for (const auto& el : encoded)
+    {
+        std::cout << el << " ";
+    }
+
+    std::cout << std::endl;
+
+    const PrimeFieldElement hash = hashElements(encoded);
+    std::cout << "order hash: " << hash << std::endl;
+
+    return 0;
+}
+
+
 int main()
 {
-    return dummyCryptoCppTest() | dummyKeccakTest() | domainHashCheck();
+    return dummyCryptoCppTest() | dummyKeccakTest() | domainHashCheck() | orderHashCheck();
 }

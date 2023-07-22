@@ -25,8 +25,8 @@ std::vector< starkware::PrimeFieldElement > StarknetDomain::pedersenEncode() con
 {
     static constexpr char const* strStarknetDomain = "StarkNetDomain(name:felt,chainId:felt,version:felt)";
     static constexpr char const* strName = "Paradex";
-    constexpr size_t numNameLen = std::char_traits< char >::length( strName );
 
+    constexpr size_t numNameLen = std::char_traits< char >::length( strName );
     const auto tmpName = signer::strToBigInt< numNameLen >( strName );
 
     const BigInt< 4 > name = signer::bigIntToUint256( tmpName );

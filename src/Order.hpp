@@ -1,6 +1,8 @@
 #pragma once
 
 #include <optional>
+#include <chrono>
+#include <string>
 
 #include <starkware/algebra/prime_field_element.h>
 
@@ -13,7 +15,7 @@ enum OrderSide
     Sell
 };
 
-starkware::PrimeFieldElement encodeChainSide(OrderSide value);
+starkware::PrimeFieldElement encodeChainSide( OrderSide value );
 
 enum OrderType
 {
@@ -21,7 +23,7 @@ enum OrderType
     Limit
 };
 
-starkware::PrimeFieldElement encodeOrderType(OrderType value);
+starkware::PrimeFieldElement encodeOrderType( OrderType value );
 
 class Order
 {
@@ -29,20 +31,20 @@ class Order
     using Uint256 = starkware::PrimeFieldElement::ValueType;
 
     // TODO: fix strToBigInt constexpr issue with always returning BigInt<4>
-    Order( const char* theMarket, OrderSide theOrderSide, OrderType theOrderType,
-        double theSize, const std::optional<Uint256>& theLimitPrice );
+    Order( const std::string& theMarket, OrderSide theOrderSide, OrderType theOrderType, double theSize,
+        const std::optional< Uint256 >& theLimitPrice = std::nullopt);
 
     std::vector< starkware::PrimeFieldElement > pedersenEncode() const;
 
     Uint256 getChainPrice() const;
 
   private:
-    Uint256 timestamp = Uint256::Zero();
-    Uint256 market;
+    std::chrono::milliseconds timestamp;
+    std::string market;
     OrderSide orderSide;
     OrderType orderType;
     double size;
-    std::optional<Uint256> limitPrice;
+    std::optional< Uint256 > limitPrice;
 };
 
 } // signer

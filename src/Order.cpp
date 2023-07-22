@@ -1,6 +1,6 @@
 #include <chrono>
 #include <exception>
-#include <<stdexcept>>
+#include <stdexcept>
 
 #include "Order.hpp"
 #include "UtilsImpl.hpp"
@@ -50,48 +50,46 @@ starkware::PrimeFieldElement encodeOrderType( OrderType value )
     }
 }
 
-Order::Order( const Uint256& theMarket, OrderSide theOrderSide, OrderType theOrderType, double theSize, const std::optional<Uint256>& theLimitPrice )
-    : market( theMarket )
-    , orderSide( theOrderSide )
+Order::Order( const std::string& theMarket, OrderSide theOrderSide, OrderType theOrderType, double theSize,
+    const std::optional< Uint256 >& theLimitPrice /* = std::nullopt */)
+    : orderSide( theOrderSide )
+    , market( theMarket )
     , orderType( theOrderType )
     , size( theSize )
 {
     using namespace std::chrono;
 
-    milliseconds ms = duration_cast< milliseconds >( system_clock::now().time_since_epoch() );
+    timestamp = duration_cast< milliseconds >( system_clock::now().time_since_epoch() );
 
-    timestamp = Uint256( ms.count() );
-
-    if (orderType == OrderType::Limit && !theLimitPrice.has_value())
+    if( orderType == OrderType::Limit && !theLimitPrice.has_value() )
     {
-        throw new std::invalid_argument("If OrderType::Limit theLimitPrice shall exist");
+        throw new std::invalid_argument( "If OrderType::Limit theLimitPrice shall exist" );
     }
-
     limitPrice = theLimitPrice;
 }
 
 Order::Uint256 Order::getChainPrice() const
 {
-    if(orderType == OrderType::Market)
+    if( orderType == OrderType::Market )
     {
-        return Uint256 (0);
+        return Uint256( 0 );
     }
 
     return limitPrice.value();
 }
 
-
 std::vector< starkware::PrimeFieldElement > Order::pedersenEncode() const
 {
     using namespace starkware;
 
-    const PrimeFieldElement timestamp =  PrimeFieldElement::FromBigInt(this->timestamp);
+    const PrimeFieldElement timestamp = PrimeFieldElement::FromUint( this->timestamp.count() );
+    const PrimeFieldElement market = signer::strToFelt( this->market.c_str(), this->market.length() );
     const PrimeFieldElement chainSide = encodeChainSide( this->orderSide );
-    const PrimeFieldElement orderType = signer::encodeOrderType(this->orderType);
-    const PrimeFieldElement chainPrice = PrimeFieldElement::FromBigInt(getChainPrice());
-    const PrimeFieldElement chainSize = PrimeFieldElement::FromUint(size * 100000000);
+    const PrimeFieldElement orderType = signer::encodeOrderType( this->orderType );
+    const PrimeFieldElement chainSize = PrimeFieldElement::FromUint( size * 100000000 );
+    const PrimeFieldElement chainPrice = PrimeFieldElement::FromBigInt( getChainPrice() );
 
-    const tmp
+    return { timestamp, market, chainSide, orderType, chainSize, chainPrice };
 }
 
 } // namespace signer
