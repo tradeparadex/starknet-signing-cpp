@@ -3,6 +3,7 @@
 #include "UtilsImpl.hpp"
 #include "StarknetDomain.hpp"
 #include "Order.hpp"
+#include "Message.hpp"
 
 #include "starkware/crypto/ecdsa.h"
 #include "starkware/algebra/prime_field_element.h"
@@ -27,6 +28,8 @@ signer::StarknetDomain getDomain()
 
     const BigInt< 4 > chainId = 0x505249564154455F534E5F504F54435F474F45524C49_Z;
     signer::StarknetDomain domain( chainId );
+
+    return domain;
 }
 
 int domainHashCheck()
@@ -55,7 +58,7 @@ signer::Order getOrder()
     constexpr double size = 0.1;
 
     Order order(strMarket, orderSide, orderType, size);
-    order.setTimestamp(1690026783853ms);
+    order.setTimestamp(1690093693471ms);
 
     return order;
 }
@@ -78,13 +81,38 @@ int orderHashCheck()
     return 0;
 }
 
+signer::Message getMessage()
+{
+    using namespace starkware;
+    using namespace signer;
+
+    StarknetDomain starknetDomain = getDomain();
+    Order order = getOrder();
+    const auto address = 0x1F06D2232E3EB0D8BD4B9294A930D553F610A0D7B24BC52D9472C7BDA478927_Z;
+    const PrimeFieldElement accountAddress = PrimeFieldElement::FromBigInt(address);
+
+    return Message(accountAddress, std::make_shared<StarknetDomain>(starknetDomain), std::make_shared<Order>(order));
+}
+
+
 int messageHashCheck()
 {
-    
+    std::cout << "messageHashCheck" << std::endl;
+
+    using namespace starkware;
+    using namespace signer;
+
+    Message message = getMessage();
+    // With current fixed timestamp
+    // 0x07e6f70ab4abb4cd996472c715a665dd4099fd20f4e3a0da522195df672742ed
+    auto h = message.hash();
+    std::cout << h << std::endl;
+
+    return 0;
 }
 
 
 int main()
 {
-    return dummyKeccakTest() | domainHashCheck() | orderHashCheck();
+    return messageHashCheck();// | dummyKeccakTest() | domainHashCheck() | orderHashCheck();
 }
