@@ -16,7 +16,7 @@ using namespace starkware;
 template< size_t StrLen >
 struct StrToUint64Len
 {
-    static constexpr size_t value = ( sizeof( char ) * StrLen + sizeof( uint64_t ) ) / sizeof( uint64_t );
+    static constexpr size_t value = ( sizeof( char ) * StrLen + sizeof( uint64_t ) - 1 ) / sizeof( uint64_t );
 };
 
 /*
@@ -46,6 +46,8 @@ constexpr T swapEndian( T u );
 template< size_t N >
 constexpr BigInt< N > swapEndian( const BigInt< N >& val );
 
+constexpr void swapEndian(uint64_t* dest, size_t destLen);
+
 template< size_t N, size_t M >
 BigInt< std::min( N, M ) > operator&( const BigInt< N >& a, const BigInt< M >& b );
 
@@ -55,8 +57,12 @@ constexpr std::array< uint64_t, N > bigIntToArray( const BigInt< N >& value );
 template< size_t StrLen >
 BigInt< StrToUint64Len< StrLen >::value > strToBigInt( const char* str );
 
+PrimeFieldElement strToFelt(const char* str, size_t len);
+
 /// string shall be supplied in ascii encoding
 template< size_t StrLen >
 std::array< uint64_t, StrToUint64Len< StrLen >::value > strToUint64Array( const char* str );
+
+void strToUint64ArrayImpl(const char* src, size_t srcLen, uint64_t* dest, size_t destLen);
 
 }

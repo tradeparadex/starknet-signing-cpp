@@ -51,7 +51,24 @@ constexpr BigInt< N > swapEndian( const BigInt< N >& val )
         arr[ N - i - 1 ] = swapEndian( val[ i ] );
     }
 
-    return BigInt< N >( arr );
+    return BigInt<N>(arr);
+//
+//    if ( N == 0 )
+//    {
+//        return;
+//    }
+//
+//    int start = 0;
+//    int end = N - 1;
+//
+//    while (start < end) {
+//        int temp = arr[start];
+//        arr[start] = swapEndian(arr[end]);
+//        arr[end] = swapEndian(temp);
+//
+//        start++;
+//        end--;
+//    }
 }
 
 template< size_t N, size_t M >
@@ -118,26 +135,13 @@ template< size_t StrLen >
 std::array< uint64_t, StrToUint64Len< StrLen >::value > strToUint64Array( const char* str )
 {
     constexpr size_t len64 = StrToUint64Len< StrLen >::value;
-    constexpr uint8_t numIterations = sizeof( uint64_t ) / sizeof( char );
 
-    std::array< uint64_t, len64 > arr = { { 0 } };
+    std::array< uint64_t, len64 > arr;
     std::fill( arr.begin(), arr.end(), 0 );
 
-    int counter = 0;
-    for( int i = len64 - 1; i >= 0; --i )
-    {
-        int charCounter = 0;
-        while( counter < StrLen && charCounter < numIterations )
-        {
-            arr[ i ] <<= sizeof( char ) * 8;
-            arr[ i ] |= ( uint64_t ) * ( str + counter );
-
-            ++charCounter;
-            ++counter;
-        }
-    }
+    strToUint64ArrayImpl(str, StrLen, arr.data(), len64);
 
     return arr;
 }
 
-} // signer
+} // namespace signer
