@@ -8,11 +8,11 @@
 namespace signer
 {
 
+using Uint256 = starkware::PrimeFieldElement::ValueType;
+
 class StarknetDomain: public HashableIface
 {
   public:
-    using Uint256 = starkware::PrimeFieldElement::ValueType;
-
     explicit StarknetDomain( const Uint256& chainId );
     explicit StarknetDomain( const starkware::PrimeFieldElement& chainId );
 

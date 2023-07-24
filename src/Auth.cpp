@@ -24,6 +24,16 @@ void Auth::setExpiry( std::chrono::seconds value )
     expiry = value;
 }
 
+std::chrono::seconds Auth::getNow() const
+{
+    return now;
+}
+
+std::chrono::seconds Auth::getExpiry() const
+{
+    return expiry;
+}
+
 std::vector< starkware::PrimeFieldElement > Auth::pedersenEncode() const
 {
     using namespace starkware;
