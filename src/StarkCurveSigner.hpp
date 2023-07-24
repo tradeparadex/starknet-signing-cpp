@@ -11,12 +11,12 @@ namespace signer
 
 struct KeyPair
 {
-    KeyPair( const starkware::PrimeFieldElement& thePrivateKey, const starkware::PrimeFieldElement& thePublicKey );
+    KeyPair( const starkware::PrimeFieldElement::ValueType & thePrivateKey, const starkware::PrimeFieldElement& thePublicKey );
     KeyPair( const KeyPair& ) = default;
 
     KeyPair getPublicKey() const;
 
-    starkware::PrimeFieldElement privateKey;
+    starkware::PrimeFieldElement::ValueType privateKey;
     starkware::PrimeFieldElement publicKey;
 };
 
