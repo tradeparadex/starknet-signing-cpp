@@ -4,7 +4,7 @@
 namespace signer
 {
 
-KeyPair::KeyPair( const starkware::PrimeFieldElement& thePrivateKey, const starkware::PrimeFieldElement& thePublicKey )
+KeyPair::KeyPair( const starkware::PrimeFieldElement::ValueType& thePrivateKey, const starkware::PrimeFieldElement& thePublicKey )
     : privateKey( thePrivateKey )
     , publicKey( thePublicKey )
 {
@@ -12,7 +12,7 @@ KeyPair::KeyPair( const starkware::PrimeFieldElement& thePrivateKey, const stark
 
 KeyPair KeyPair::getPublicKey() const
 {
-    const auto ecPoint = starkware::GetPublicKey( privateKey.ToStandardForm() );
+    const auto ecPoint = starkware::GetPublicKey( privateKey );
     return { privateKey, ecPoint.x };
 }
 
@@ -25,9 +25,8 @@ starkware::Signature StarkCurveSigner::signMessage( const EncodableIface& messag
 {
     const auto encodedMessage = message.pedersenEncode();
     const PrimeFieldElement messageHash = hashElements( encodedMessage );
-    const auto key = keyPair.privateKey.ToStandardForm();
 
-    return SignEcdsa( keyPair.privateKey.ToStandardForm(), messageHash, k );
+    return SignEcdsa( keyPair.privateKey, messageHash, k );
 }
 
 }
