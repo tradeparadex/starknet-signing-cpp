@@ -1,6 +1,6 @@
 #pragma once
 
-#include  <utility>
+#include <utility>
 #include <starkware/algebra/prime_field_element.h>
 #include <starkware/crypto/ecdsa.h>
 

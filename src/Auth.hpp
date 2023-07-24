@@ -16,6 +16,9 @@ class Auth: public HashableIface
     void setNow(std::chrono::seconds value);
     void setExpiry(std::chrono::seconds value);
 
+    std::chrono::seconds getNow() const;
+    std::chrono::seconds getExpiry() const;
+
     virtual std::vector< starkware::PrimeFieldElement> pedersenEncode() const override;
 
   private:
