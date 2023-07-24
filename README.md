@@ -7,13 +7,17 @@
 # Compilation
 1)  Init submodule
     ```
-    git submodule update --init`
+    git submodule update --init
     ```
 
 2)  Run
     ```
-    `./build.sh`
+    ./build.sh
     ```
     
-# Dependencies
+# Running tests
+
+After successful compilation executable shall be located in: `project-root/build/tests/test`.
+
+# Third party dependencies
 - keccak sourced from `https://github.com/AztecProtocol/barretenberg.git`
