@@ -1,3 +1,6 @@
 [submodule "libs/crypto-cpp"]
 	path = libs/crypto-cpp
 	url = https://github.com/taco-paco/crypto-cpp.git
+[submodule "libs/curlpp"]
+	path = libs/curlpp
+	url = https://github.com/taco-paco/curlpp.git
