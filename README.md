@@ -1,7 +1,7 @@
 # starknet-signing-cpp
 
 # Prerequisites
-- CMake 3.5+ 
+- CMake 3.5+ ```% cmake -version```
 - C++17 toolchain
 - Python 3.x
 - conan
