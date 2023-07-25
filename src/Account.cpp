@@ -69,6 +69,7 @@ void Account::removeLeadingZeroes(std::string* value) {
 std::string Account::getJwtToken() const
 {
     using namespace std::chrono;
+    using namespace starkware;
 
     const Auth auth;
     const StarknetDomain starknetDomain = createStarknetDomain();
@@ -79,7 +80,7 @@ std::string Account::getJwtToken() const
 
     // TODO: implement generate_k
     const auto k = 0x54d7beec5ec728223671c627557efc5c9a6508425dc6c900b7741bf60afec06_Z;
-    const auto signature = signer.signMessage( message );
+    const auto signature = signer.signMessage( message, k );
     const uint64_t now = auth.getNow().count();
     const uint64_t expiry = auth.getExpiry().count();
 
