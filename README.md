@@ -9,7 +9,7 @@
 # Conan setup
 In root run 
 ```
-pip install -r requirments.txt
+% sudo pip3 install -r requirements.txt
 ```
 
 # Compilation
