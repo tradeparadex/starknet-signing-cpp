@@ -21,7 +21,7 @@ StarkCurveSigner::StarkCurveSigner( const KeyPair& theKeyPair )
 {
 }
 
-starkware::Signature StarkCurveSigner::signMessage( const EncodableIface& message, const starkware::PrimeFieldElement::ValueType& k /* = numK */) const
+starkware::Signature StarkCurveSigner::signMessage( const EncodableIface& message, const starkware::PrimeFieldElement::ValueType& k ) const
 {
     const auto encodedMessage = message.pedersenEncode();
     const PrimeFieldElement messageHash = hashElements( encodedMessage );

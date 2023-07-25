@@ -76,6 +76,9 @@ std::string Account::getJwtToken() const
     const Message message( address, std::make_shared< StarknetDomain >( starknetDomain ), std::make_shared< Auth >( auth ) );
 
     const auto hash = message.hash();
+
+    // TODO: implement generate_k
+    const auto k = 0x54d7beec5ec728223671c627557efc5c9a6508425dc6c900b7741bf60afec06_Z;
     const auto signature = signer.signMessage( message );
     const uint64_t now = auth.getNow().count();
     const uint64_t expiry = auth.getExpiry().count();
