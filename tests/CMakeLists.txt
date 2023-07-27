@@ -24,3 +24,6 @@ target_link_libraries(clientTest curlpp_static signer)
 
 add_executable(algo_example algo_example.cpp)
 target_link_libraries(algo_example curlpp_static signer)
+
+add_executable(perf_test perf_test.cpp)
+target_link_libraries(perf_test curlpp_static signer)
