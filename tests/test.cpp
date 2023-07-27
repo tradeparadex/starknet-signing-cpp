@@ -181,6 +181,24 @@ TEST(StarkCurveSigner, signAndVerify)
     EXPECT_TRUE( signer.verifyEcdsa( h, res ) );
 }
 
+TEST(StarkCurveSigner, signSpeedTest)
+{
+    using namespace starkware;
+
+    const auto privateKey = 0x3c1e9550e66958296d11b60f8e8e7a7ad990d07fa65d5f7652c4a6c87d4e3cc_Z;
+    const EcPoint< PrimeFieldElement > publicKey(
+        PrimeFieldElement::FromBigInt( 0x77a3b314db07c45076d11f62b6f9e748a39790441823307743cf00d6597ea43_Z ),
+        PrimeFieldElement::FromBigInt( 0x54d7beec5ec728223671c627557efc5c9a6508425dc6c900b7741bf60afec06_Z ) );
+
+    KeyPair keyPair( privateKey, publicKey );
+    StarkCurveSigner signer( keyPair );
+
+    Message message = getOrderMessage();
+    const auto k = 0x54d7beec5ec728223671c627557efc5c9a6508425dc6c900b7741bf60afec06_Z;
+
+    signer.signMessage( message, k );
+}
+
 
 } // namespace tests
 } // namespace signer
