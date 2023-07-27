@@ -57,6 +57,7 @@ int main() {
 
 // Get the current time before the operation
 // THis is test comment
+    size_t N = 10;
     auto prepare = high_resolution_clock::now(); 
     Prng prng;
     using ValueType = PrimeFieldElement::ValueType;
@@ -65,8 +66,8 @@ int main() {
     
     StarkCurveSigner signer( keyPair );
     auto start = high_resolution_clock::now(); 
-    std::cout << "prepare:" << duration_cast<microseconds>(start - prepare).count() << std::endl;
-    for(int i = 0; i < 10; i++) {
+    std::cout << "prepare:" << duration_cast<microseconds>(start - prepare).count()  << " micros" << std::endl;
+    for(int i = 0; i < N; i++) {
         auto start_iter = high_resolution_clock::now(); 
         Message message = getOrderMessage();
         auto order_msg = high_resolution_clock::now(); 
@@ -77,15 +78,15 @@ int main() {
         const Signature res = signer.signMessage( message, k );
         auto signature = high_resolution_clock::now(); 
         // if (i % 100 == 0){
-            std::cout << i << ":" << duration_cast<microseconds>(high_resolution_clock::now() - start_iter).count() << std::endl;
-            std::cout << "order_msg:" << duration_cast<microseconds>(order_msg - start_iter).count() << std::endl;
-            std::cout << "msg_hash:" << duration_cast<microseconds>(msg_hash - start_iter).count() << std::endl;
-            std::cout << "signature:" << duration_cast<microseconds>(signature - start_iter).count() << std::endl;
+            std::cout << i << " iteration:" << duration_cast<microseconds>(signature - start_iter).count() << " micros" << std::endl;
+            std::cout << "order_msg:" << duration_cast<microseconds>(order_msg - start_iter).count()<< " micros" << std::endl;
+            std::cout << "msg_hash:" << duration_cast<microseconds>(msg_hash - order_msg).count() << " micros" << std::endl;
+            std::cout << "signature:" << duration_cast<microseconds>(signature - msg_hash).count() << " micros" << std::endl;
         // }
     }
     auto end = high_resolution_clock::now(); // Get the current time after the operation
     auto duration = duration_cast<microseconds>(end - start).count(); // Calculate the time taken in microseconds
-    std::cout << "Latency of signing: " << duration << " microseconds" << std::endl;
+    std::cout << "Latency of " << N << " signs: " << duration << " micros" << std::endl;
 
     return 0;
 }
