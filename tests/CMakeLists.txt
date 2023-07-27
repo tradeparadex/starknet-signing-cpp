@@ -21,3 +21,6 @@ add_test(test test)
 
 add_executable(clientTest ClientTest.cpp)
 target_link_libraries(clientTest curlpp_static signer)
+
+add_executable(algo_example algo_example.cpp)
+target_link_libraries(algo_example curlpp_static signer)
