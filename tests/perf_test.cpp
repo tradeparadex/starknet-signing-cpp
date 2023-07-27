@@ -56,22 +56,24 @@ Message getOrderMessage()
 int main() {
 
 // Get the current time before the operation
+    auto prepare = high_resolution_clock::now(); 
     Prng prng;
     using ValueType = PrimeFieldElement::ValueType;
     const auto privateKey = ValueType::RandomBigInt( &prng );
     KeyPair keyPair( privateKey );
-    auto start = high_resolution_clock::now(); 
+    
     StarkCurveSigner signer( keyPair );
-
-    for(int i = 0; i < 1000; i++) {
+    auto start = high_resolution_clock::now(); 
+    std::cout << "prepare:" << duration_cast<microseconds>(start - prepare).count() << std::endl;
+    for(int i = 0; i < 10; i++) {
         Message message = getOrderMessage();
         const auto h = message.hash();
         const auto k = 0x54d7beec5ec728223671c627557efc5c9a6508425dc6c900b7741bf60afec06_Z;
 
         const Signature res = signer.signMessage( message, k );
-        if (i % 100 == 0){
+        // if (i % 100 == 0){
             std::cout << i << ":" << duration_cast<microseconds>(high_resolution_clock::now() - start).count() << std::endl;
-        }
+        // }
     }
     auto end = high_resolution_clock::now(); // Get the current time after the operation
     auto duration = duration_cast<microseconds>(end - start).count(); // Calculate the time taken in microseconds
