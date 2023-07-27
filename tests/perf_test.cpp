@@ -67,13 +67,20 @@ int main() {
     auto start = high_resolution_clock::now(); 
     std::cout << "prepare:" << duration_cast<microseconds>(start - prepare).count() << std::endl;
     for(int i = 0; i < 10; i++) {
+        auto start_iter = high_resolution_clock::now(); 
         Message message = getOrderMessage();
+        auto order_msg = high_resolution_clock::now(); 
         const auto h = message.hash();
+        auto msg_hash = high_resolution_clock::now(); 
         const auto k = 0x54d7beec5ec728223671c627557efc5c9a6508425dc6c900b7741bf60afec06_Z;
 
         const Signature res = signer.signMessage( message, k );
+        auto signature = high_resolution_clock::now(); 
         // if (i % 100 == 0){
-            std::cout << i << ":" << duration_cast<microseconds>(high_resolution_clock::now() - start).count() << std::endl;
+            std::cout << i << ":" << duration_cast<microseconds>(high_resolution_clock::now() - start_iter).count() << std::endl;
+            std::cout << "order_msg:" << duration_cast<microseconds>(order_msg - start_iter).count() << std::endl;
+            std::cout << "msg_hash:" << duration_cast<microseconds>(msg_hash - start_iter).count() << std::endl;
+            std::cout << "signature:" << duration_cast<microseconds>(signature - start_iter).count() << std::endl;
         // }
     }
     auto end = high_resolution_clock::now(); // Get the current time after the operation
