@@ -5,6 +5,11 @@ namespace signer
 {
 using namespace starkware;
 
+StarknetDomain::StarknetDomain(const std::string& theChainId)
+{
+    chainId = strToFelt( theChainId.c_str(), theChainId.size() ).ToStandardForm();
+}
+
 StarknetDomain::StarknetDomain( const PrimeFieldElement& theChainId )
 {
     chainId = theChainId.ToStandardForm();

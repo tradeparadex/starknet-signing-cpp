@@ -13,12 +13,13 @@ namespace signer
 class Account
 {
   public:
+    Account( const starkware::PrimeFieldElement& theAddress, const std::string& theChainId, const KeyPair& theKeyPair );
     Account( const starkware::PrimeFieldElement& theAddress, const Uint256& theChainId, const KeyPair& theKeyPair );
 
     StarknetDomain createStarknetDomain() const;
     Message createAuthMessage() const;
 
-    std::string getJwtToken() const;
+    std::string getJwtToken(const std::string& url) const;
 
   private:
     template <class T>

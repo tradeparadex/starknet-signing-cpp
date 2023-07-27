@@ -5,9 +5,17 @@
 #include "starkware/crypto//elliptic_curve_constants.h"
 
 #include "Account.hpp"
+#include "Utils.hpp"
 
 namespace signer
 {
+
+Account::Account( const starkware::PrimeFieldElement& theAddress, const std::string& theChainId, const KeyPair& theKeyPair )
+: address( theAddress )
+, signer( StarkCurveSigner( theKeyPair ) )
+{
+    chainId = strToFelt( theChainId.c_str(), theChainId.size() ).ToStandardForm();
+}
 
 Account::Account( const starkware::PrimeFieldElement& theAddress, const Uint256& theChainId, const KeyPair& theKeyPair )
     : address( theAddress )
@@ -42,31 +50,37 @@ void Account::replace( std::string* header, const char* token, T val )
     header->replace( pos, numTokenLen, s.str() );
 }
 
-void Account::removeLeadingZeroes(std::string* value) {
+void Account::removeLeadingZeroes( std::string* value )
+{
     std::string& hexValue = *value;
 
     // Check if the first 2 characters are "0x"
-    if (hexValue.length() < 2 || hexValue.substr(0, 2) != "0x") {
+    if( hexValue.length() < 2 || hexValue.substr( 0, 2 ) != "0x" )
+    {
         return;
     }
 
     size_t startPos = 2;
 
     // Find the position of the first non-zero character after "0x"
-    while (startPos < hexValue.length() && hexValue[startPos] == '0') {
+    while( startPos < hexValue.length() && hexValue[ startPos ] == '0' )
+    {
         startPos++;
     }
 
     // Extract the substring starting from the first non-zero character
-    if (startPos < hexValue.length()) {
-        hexValue = "0x" + hexValue.substr(startPos);
-    } else {
+    if( startPos < hexValue.length() )
+    {
+        hexValue = "0x" + hexValue.substr( startPos );
+    }
+    else
+    {
         // If the entire string is zeros, keep at least one zero.
         hexValue = "0x0";
     }
 }
 
-std::string Account::getJwtToken() const
+std::string Account::getJwtToken( const std::string& url ) const
 {
     using namespace std::chrono;
     using namespace starkware;
@@ -86,7 +100,6 @@ std::string Account::getJwtToken() const
 
     try
     {
-        std::string url = "https://api.testnet.paradex.trade/v1/auth";
         std::string data = "{}"; // Replace this with your POST request data (if any)
 
         std::string accountHeader = "PARADEX-STARKNET-ACCOUNT: %1";
@@ -95,9 +108,9 @@ std::string Account::getJwtToken() const
             s << address;
 
             std::string strAddress = s.str();
-            removeLeadingZeroes(&strAddress);
+            removeLeadingZeroes( &strAddress );
 
-            replace( &accountHeader, "%1", strAddress);
+            replace( &accountHeader, "%1", strAddress );
         }
 
         std::string signatureHeader = "PARADEX-STARKNET-SIGNATURE: [\"%1\", \"%2\"]";

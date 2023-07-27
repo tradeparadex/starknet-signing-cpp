@@ -3,6 +3,7 @@
 #include <utility>
 #include <starkware/algebra/prime_field_element.h>
 #include <starkware/crypto/ecdsa.h>
+#include <starkware/algebra/elliptic_curve.h>
 
 #include "EncodableIface.hpp"
 
@@ -11,13 +12,12 @@ namespace signer
 
 struct KeyPair
 {
-    KeyPair( const starkware::PrimeFieldElement::ValueType & thePrivateKey, const starkware::PrimeFieldElement& thePublicKey );
+    explicit KeyPair( const starkware::PrimeFieldElement::ValueType& thePrivateKey,
+        const std::optional< starkware::EcPoint< starkware::PrimeFieldElement > >& thePublicKey = std::nullopt );
     KeyPair( const KeyPair& ) = default;
 
-    KeyPair getPublicKey() const;
-
     starkware::PrimeFieldElement::ValueType privateKey;
-    starkware::PrimeFieldElement publicKey;
+    starkware::EcPoint< starkware::PrimeFieldElement > publicKey;
 };
 
 class StarkCurveSigner
@@ -27,6 +27,7 @@ class StarkCurveSigner
 
     // TODO: implement generate_k
     starkware::Signature signMessage( const EncodableIface& message, const starkware::PrimeFieldElement::ValueType& k ) const;
+    bool verifyEcdsa(const starkware::PrimeFieldElement& hash, const starkware::Signature& signature) const;
 
   private:
     KeyPair keyPair;

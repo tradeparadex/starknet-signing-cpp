@@ -33,6 +33,11 @@ TEST( Utils, getSelectorFromName )
     }
 
     {
+        const auto res = strToFelt("PRIVATE_SN_POTC_GOERLI", strlen("PRIVATE_SN_POTC_GOERLI"));
+        std::cout << res << std::endl;
+    }
+
+    {
         static constexpr char const* str = "3";
         const auto res = getSelectorFromName( str, strlen( str ) );
         const auto expected = 0x280e1ef1d7842f27f2e6be0972bb708b9a135c38860dbe73c27c3486c34f4de_Z;
@@ -163,18 +168,17 @@ TEST(StarkCurveSigner, signAndVerify)
     using ValueType = PrimeFieldElement::ValueType;
 
     // Draw test parameters.
-    const auto private_key = ValueType::RandomBigInt(&prng);
-    const auto public_key = GetPublicKey(private_key);
+    const auto privateKey = ValueType::RandomBigInt( &prng );
 
-    KeyPair keyPair(private_key, public_key.x);
-    StarkCurveSigner signer(keyPair);
+    KeyPair keyPair( privateKey );
+    StarkCurveSigner signer( keyPair );
 
     Message message = getOrderMessage();
     const auto h = message.hash();
     const auto k = 0x54d7beec5ec728223671c627557efc5c9a6508425dc6c900b7741bf60afec06_Z;
 
-    const Signature res = signer.signMessage(message, k);
-    EXPECT_TRUE(VerifyEcdsa(public_key, h, res));
+    const Signature res = signer.signMessage( message, k );
+    EXPECT_TRUE( signer.verifyEcdsa( h, res ) );
 }
 
 

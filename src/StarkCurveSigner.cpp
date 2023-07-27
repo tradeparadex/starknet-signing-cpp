@@ -4,16 +4,19 @@
 namespace signer
 {
 
-KeyPair::KeyPair( const starkware::PrimeFieldElement::ValueType& thePrivateKey, const starkware::PrimeFieldElement& thePublicKey )
+KeyPair::KeyPair( const PrimeFieldElement::ValueType& thePrivateKey,
+    const std::optional< starkware::EcPoint< starkware::PrimeFieldElement > >& thePublicKey )
     : privateKey( thePrivateKey )
-    , publicKey( thePublicKey )
+    , publicKey( PrimeFieldElement::Zero(), PrimeFieldElement::Zero() )
 {
-}
-
-KeyPair KeyPair::getPublicKey() const
-{
-    const auto ecPoint = starkware::GetPublicKey( privateKey );
-    return { privateKey, ecPoint.x };
+    if( thePublicKey )
+    {
+        publicKey = *thePublicKey;
+    }
+    else
+    {
+        publicKey = GetPublicKey( thePrivateKey );
+    }
 }
 
 StarkCurveSigner::StarkCurveSigner( const KeyPair& theKeyPair )
@@ -29,4 +32,9 @@ starkware::Signature StarkCurveSigner::signMessage( const EncodableIface& messag
     return SignEcdsa( keyPair.privateKey, messageHash, k );
 }
 
+bool StarkCurveSigner::verifyEcdsa(const starkware::PrimeFieldElement& hash, const starkware::Signature& signature) const
+{
+    return VerifyEcdsa( keyPair.publicKey, hash, signature );
 }
+
+} // namepsace signer

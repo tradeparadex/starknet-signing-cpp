@@ -13,8 +13,9 @@ using Uint256 = starkware::PrimeFieldElement::ValueType;
 class StarknetDomain: public HashableIface
 {
   public:
-    explicit StarknetDomain( const Uint256& chainId );
-    explicit StarknetDomain( const starkware::PrimeFieldElement& chainId );
+    explicit StarknetDomain(const std::string& theChainId);
+    explicit StarknetDomain( const Uint256& theChainId );
+    explicit StarknetDomain( const starkware::PrimeFieldElement& theChainId );
 
     virtual std::vector< starkware::PrimeFieldElement > pedersenEncode() const override;
 
