@@ -1,7 +1,8 @@
 [package]
-name = "starknet-crpyto-ffi"
+name = "starkware-rust-api"
 version = "0.1.0"
 edition = "2021"
+authors = ["Edwin Paco <edwinswatpako@gmail.com>"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -19,5 +20,5 @@ version = "0.5.1"
 default-features = false
 
 [lib]
-name = "starknet_crypto_ffi"
+name = "starkware_rust_api"
 crate-type = ["staticlib"]

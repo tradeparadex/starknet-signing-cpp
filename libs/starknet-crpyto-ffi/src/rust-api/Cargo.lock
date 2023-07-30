@@ -588,17 +588,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "starknet-crpyto-ffi"
-version = "0.1.0"
-dependencies = [
- "ark-ff",
- "crypto-bigint",
- "starknet-core",
- "starknet-crypto",
- "starknet-ff",
-]
-
-[[package]]
 name = "starknet-crypto"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -650,6 +639,17 @@ dependencies = [
  "getrandom",
  "hex",
  "serde",
+]
+
+[[package]]
+name = "starkware-rust-api"
+version = "0.1.0"
+dependencies = [
+ "ark-ff",
+ "crypto-bigint",
+ "starknet-core",
+ "starknet-crypto",
+ "starknet-ff",
 ]
 
 [[package]]
