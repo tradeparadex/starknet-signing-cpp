@@ -34,6 +34,7 @@
 # Folders
 build
 cmake-build-debug
+libs/starknet-crpyto-ffi/target
 
 # IDE related
 .idea

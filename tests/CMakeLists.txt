@@ -15,9 +15,12 @@ enable_testing()
 
 include_directories(${CMAKE_SOURCE_DIR}/libs/crypto-cpp/src)
 
-add_executable(test test.cpp)
+add_executable(test test.cpp TestUtils.cpp)
 target_link_libraries(test signer gtest gtest_main gmock pthread)
 add_test(test test)
 
 add_executable(clientTest ClientTest.cpp)
 target_link_libraries(clientTest curlpp_static signer)
+
+add_executable(benchmarks benchmarks.cpp TestUtils.cpp)
+target_link_libraries(benchmarks starknet_crypto_ffi signer)
