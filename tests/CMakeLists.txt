@@ -23,4 +23,4 @@ add_executable(clientTest ClientTest.cpp)
 target_link_libraries(clientTest curlpp_static signer)
 
 add_executable(benchmarks benchmarks.cpp TestUtils.cpp)
-target_link_libraries(benchmarks starknet_crypto_ffi signer)
+target_link_libraries(benchmarks starkware_rust_api signer)

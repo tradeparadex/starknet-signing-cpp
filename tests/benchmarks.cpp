@@ -12,36 +12,13 @@
 
 #define BENCHMARK_FUNCTION(func, ...)                             \
     auto start_time = std::chrono::high_resolution_clock::now(); \
-    func(__VA_ARGS__);                                        \
+    auto funcRes = func(__VA_ARGS__);                                        \
     auto end_time = std::chrono::high_resolution_clock::now();   \
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count(); \
     std::cout << "Execution time: " << duration << " microseconds" << std::endl; \
 
 extern "C" {
 int32_t ecdsa_sign( const uint64_t*, size_t, const uint64_t*, size_t, uint64_t*, uint64_t* );
-}
-
-std::array<uint64_t, 4> feltToArray(const starkware::PrimeFieldElement& value)
-{
-    std::array<uint64_t, 4> output;
-    const auto bigInt = value.ToStandardForm();
-    for (int i = 0; i<4;i++)
-    {
-        output[i] = bigInt[i];
-    }
-
-    return output;
-}
-
-std::array<uint64_t, 4> bigIntToArray(const starkware::PrimeFieldElement::ValueType& value)
-{
-    std::array<uint64_t, 4> output;
-    for (int i = 0; i<4;i++)
-    {
-        output[i] = value[i];
-    }
-
-    return output;
 }
 
 inline void benchSign(const starkware::PrimeFieldElement::ValueType& privateKey)
