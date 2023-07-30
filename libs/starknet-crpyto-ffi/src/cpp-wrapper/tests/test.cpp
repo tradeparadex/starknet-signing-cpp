@@ -1,5 +1,6 @@
 #include <iostream>
 #include <starkware/algebra/prime_field_element.h>
+#include <starkware/crypto//elliptic_curve_constants.h>
 
 #include "Ecdsa.hpp"
 
@@ -75,24 +76,40 @@ inline int benchSignK(const starkware::PrimeFieldElement::ValueType& privateKey)
     return 0;
 }
 
+// C++ ~ verify  2x times slower
 inline int testSignAndVerify(const starkware::PrimeFieldElement::ValueType& privateKey)
 {
     using namespace starkware;
     using namespace StarkwareCppWrapper;
 
-    const PrimeFieldElement publicKey = GetPublicKey(privateKey).x;
+    const auto publicKey = GetPublicKey( privateKey );
     const auto privateKeyFelt = PrimeFieldElement::FromBigInt( privateKey );
-    const PrimeFieldElement hash = PrimeFieldElement::FromBigInt(0x02ff954a62a6191411aa051588c65a4ac37690ce781bb345bb886ac947630e5b_Z);
+    const PrimeFieldElement hash = PrimeFieldElement::FromBigInt( 0x02ff954a62a6191411aa051588c65a4ac37690ce781bb345bb886ac947630e5b_Z );
 
-    const Signature signature = Ecdsa::ecdsaSign(privateKeyFelt, hash );
-    BENCHMARK_FUNCTION(Ecdsa::ecdsaVerify, publicKey, hash, signature);
+    const Signature signature = Ecdsa::ecdsaSign( privateKeyFelt, hash );
+    BENCHMARK_FUNCTION( Ecdsa::ecdsaVerify, publicKey.x, hash, signature );
 
-    const auto sFelt = PrimeFieldElement::FromBigInt( signature.second.ToStandardForm().InvModPrime( starkware::GetEcConstants().k_order ) );
-
-
-    std::string s = funcRes ? "true": "false";
-    std::cout << "valid: " << s  << std::endl;
+    std::string s = funcRes ? "true" : "false";
+    std::cout << "valid: " << s << std::endl;
 }
+
+inline int testSignAndVerifyCpp(const starkware::PrimeFieldElement::ValueType& privateKey)
+{
+    using namespace starkware;
+    using namespace StarkwareCppWrapper;
+
+    const auto publicKey = GetPublicKey( privateKey );
+    const auto privateKeyFelt = PrimeFieldElement::FromBigInt( privateKey );
+    const PrimeFieldElement hash = PrimeFieldElement::FromBigInt( 0x02ff954a62a6191411aa051588c65a4ac37690ce781bb345bb886ac947630e5b_Z );
+
+    const Signature signature = Ecdsa::ecdsaSign( privateKeyFelt, hash );
+    const auto sFelt = PrimeFieldElement::FromBigInt( signature.second.ToStandardForm().InvModPrime( GetEcConstants().k_order ) );
+    BENCHMARK_FUNCTION( VerifyEcdsa, publicKey, hash, { signature.first, sFelt } );
+
+    std::string s = funcRes ? "true" : "false";
+    std::cout << "valid: " << s << std::endl;
+}
+
 
 int main()
 {
