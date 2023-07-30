@@ -4,3 +4,7 @@ pub const ERR_MESSAGE_HASH_LEN: i32 = 2;
 pub const ERR_ECDSA_SIGN: i32 = 3;
 pub const ERR_INVALID_MESSAGE_HASH: i32 = 4;
 pub const ERR_INVALID_K: i32 = 5;
+pub const ERR_PUBLIC_KEY_LEN: i32 = 6;
+pub const ERR_R_LEN: i32 = 7;
+pub const ERR_S_LEN: i32 = 8;
+pub const ERR_VERIFY_FAILED: i32 = 9;

@@ -1,3 +1,4 @@
+#include <iostream>
 #include <starkware/algebra/prime_field_element.h>
 
 #include "Ecdsa.hpp"
@@ -74,6 +75,25 @@ inline int benchSignK(const starkware::PrimeFieldElement::ValueType& privateKey)
     return 0;
 }
 
+inline int testSignAndVerify(const starkware::PrimeFieldElement::ValueType& privateKey)
+{
+    using namespace starkware;
+    using namespace StarkwareCppWrapper;
+
+    const PrimeFieldElement publicKey = GetPublicKey(privateKey).x;
+    const auto privateKeyFelt = PrimeFieldElement::FromBigInt( privateKey );
+    const PrimeFieldElement hash = PrimeFieldElement::FromBigInt(0x02ff954a62a6191411aa051588c65a4ac37690ce781bb345bb886ac947630e5b_Z);
+
+    const Signature signature = Ecdsa::ecdsaSign(privateKeyFelt, hash );
+    BENCHMARK_FUNCTION(Ecdsa::ecdsaVerify, publicKey, hash, signature);
+
+    const auto sFelt = PrimeFieldElement::FromBigInt( signature.second.ToStandardForm().InvModPrime( starkware::GetEcConstants().k_order ) );
+
+
+    std::string s = funcRes ? "true": "false";
+    std::cout << "valid: " << s  << std::endl;
+}
+
 int main()
 {
     using namespace starkware;
@@ -85,7 +105,7 @@ int main()
     for( int i = 0; i < 100; i++ )
     {
         privateKey = privateKey + 0x2_Z;
-        code += rawBenchSignK(privateKey);
+        code += testSignAndVerify(privateKey);
     }
 
     return code;

@@ -18,12 +18,12 @@ starkware::Signature Ecdsa::ecdsaSign( const starkware::PrimeFieldElement& priva
 
     /// NOTE: s is inversed
     /// TODO: process code
-    int code = ecdsa_sign(rawPrivateKey.data(), 4, rawMessageHash.data(), 4, rawR.data(), rawS.data());
+    int code = ecdsa_sign( rawPrivateKey.data(), 4, rawMessageHash.data(), 4, rawR.data(), rawS.data() );
 
     const PrimeFieldElement r = PrimeFieldElement::FromMont( BigInt( rawR ) );
-    const PrimeFieldElement s = PrimeFieldElement::FromMont( BigInt(rawS));
+    const PrimeFieldElement s = PrimeFieldElement::FromMont( BigInt( rawS ) );
 
-    return {r,s};
+    return { r, s };
 }
 
 starkware::Signature Ecdsa::ecdsaSign(
@@ -47,6 +47,22 @@ starkware::Signature Ecdsa::ecdsaSign(
     const PrimeFieldElement s = PrimeFieldElement::FromMont( BigInt( rawS ) );
 
     return { r, s };
+}
+bool Ecdsa::ecdsaVerify(
+    const starkware::PrimeFieldElement& publicKey, const starkware::PrimeFieldElement& messageHash, const starkware::Signature& signature )
+{
+    using namespace starkware;
+
+    bool res = false;
+
+    const std::array< uint64_t, 4 > rawPublicKey = publicKey.ToMont().ToLimbs();
+    const std::array< uint64_t, 4 > rawMessageHash = messageHash.ToMont().ToLimbs();
+    const std::array< uint64_t, 4 > rawR = signature.first.ToMont().ToLimbs();
+    const std::array< uint64_t, 4 > rawS = signature.second.ToMont().ToLimbs();
+
+    /// NOTE: s is inversed
+    int code = ecdsa_verify( rawPublicKey.data(), 4, rawMessageHash.data(), 4, rawR.data(), 4, rawS.data(), 4, &res );
+    return res;
 }
 
 }

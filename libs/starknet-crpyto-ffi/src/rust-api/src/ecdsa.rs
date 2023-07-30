@@ -1,6 +1,10 @@
-use starknet_core::{crypto::ecdsa_sign as ecdsa_sign_rs, types::FieldElement};
-use starknet_crypto::{sign as sign_rs, SignError};
+use starknet_core::{
+    crypto::{ecdsa_sign as ecdsa_sign_rs, ecdsa_verify as ecdsa_verify_rs},
+    types::FieldElement,
+};
+use starknet_crypto::{sign as sign_rs, SignError, Signature};
 
+use crate::error_codes::{ERR_PUBLIC_KEY_LEN, ERR_R_LEN, ERR_S_LEN, ERR_VERIFY_FAILED};
 use crate::{
     constants::FELT_LIMBS_LEN,
     error_codes::{
@@ -72,5 +76,50 @@ pub extern "C" fn ecdsa_sign(
             SUCCESSFUL
         }
         Err(_) => ERR_ECDSA_SIGN,
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn ecdsa_verify(
+    public_key: *const u64,
+    public_key_len: usize,
+    message_hash: *const u64,
+    message_hash_len: usize,
+    r: *const u64,
+    r_len: usize,
+    s: *const u64,
+    s_len: usize,
+    is_valid: *mut bool,
+) -> i32 {
+    if public_key_len != FELT_LIMBS_LEN {
+        return ERR_PUBLIC_KEY_LEN;
+    }
+    let public_key = raw_pointer_into_felt(public_key);
+
+    if message_hash_len != FELT_LIMBS_LEN {
+        return ERR_MESSAGE_HASH_LEN;
+    }
+    let message_hash = raw_pointer_into_felt(message_hash);
+
+    if r_len != FELT_LIMBS_LEN {
+        return ERR_R_LEN;
+    }
+    let r = raw_pointer_into_felt(r);
+
+    if s_len != FELT_LIMBS_LEN {
+        return ERR_S_LEN;
+    }
+    let s = raw_pointer_into_felt(s);
+
+    let signature = Signature { r, s };
+
+    match ecdsa_verify_rs(&public_key, &message_hash, &signature) {
+        Ok(res) => {
+            unsafe {
+                *is_valid = res;
+            }
+            SUCCESSFUL
+        }
+        Err(_) => ERR_VERIFY_FAILED,
     }
 }
