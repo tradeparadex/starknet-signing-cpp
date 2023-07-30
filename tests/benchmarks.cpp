@@ -99,14 +99,10 @@ int main()
         int res = ecdsa_sign( private_key.data(), 4, message_hash.data(), 4, r.data(), s.data() );
 
         const auto rFelt = PrimeFieldElement::FromMont(starkware::BigInt( r ) );
+        const auto sInvFelt = PrimeFieldElement::FromMont(starkware::BigInt( s ));
+        const auto sFelt = PrimeFieldElement::FromBigInt( sInvFelt.ToStandardForm().InvModPrime( starkware::GetEcConstants().k_order ) );
 
-        const auto sBig = starkware::BigInt( s );
-        auto feltMont = PrimeFieldElement::FromMont(sBig);
-        auto lol1 = PrimeFieldElement::FromBigInt( feltMont.ToStandardForm().InvModPrime( starkware::GetEcConstants().k_order ) );
-
-        bool isValid = signer.verifyEcdsa( hash, { rFelt, lol1 } );
-        std::cout << "isValid: " << isValid << std::endl;
-
-        return res;
+        bool isValid = signer.verifyEcdsa( hash, { rFelt, sFelt } );
+        return res || !isValid;
     }
 }
