@@ -1,5 +1,6 @@
 #include <iostream>
 #include <array>
+#include <algorithm>
 #include <starkware/algebra/prime_field_element.h>
 #include <starkware/crypto//elliptic_curve_constants.h>
 
@@ -43,32 +44,53 @@ std::array<uint64_t, 4> bigIntToArray(const starkware::PrimeFieldElement::ValueT
     return output;
 }
 
-//starkware::PrimeFieldElement pointerToFelt(const uint64_t* value)
-//{
-//    starkware::BigInt<4> output = starkware::BigInt<4>::Zero();
-//
-//    for(int i = 0; i < 4; i++)
-//    {
-//        output[i] = value[i];
-//    }
-//
-//    return starkware::PrimeFieldElement::FromBigInt(output);
-//}
+inline void benchSign(const starkware::PrimeFieldElement::ValueType& privateKey)
+{
+    using namespace signer;
+    using namespace starkware;
 
+    const auto privateKeyFelt = PrimeFieldElement::FromBigInt( privateKey );
 
-#include <string>
-#include <algorithm>
+    KeyPair keyPair( privateKey );
+    StarkCurveSigner signer( keyPair );
 
-// Function to swap the endianness of a hexadecimal string
-std::string swapEndianness(const std::string& hexString) {
-    std::string swappedString;
+    Message message = getOrderMessage();
+    const auto hash = message.hash();
 
-    // Iterate through the hexadecimal string in pairs and reverse the byte order
-    for (size_t i = 0; i < hexString.size(); i += 2) {
-        swappedString.insert(0, hexString.substr(i, 2));
-    }
+    const auto private_key = privateKeyFelt.ToMont().ToLimbs();
+    const auto message_hash = hash.ToMont().ToLimbs();
+    std::array< uint64_t, 4 > r = { 0, 0, 0, 0 };
+    std::array< uint64_t, 4 > s = { 0, 0, 0, 0 };
 
-    return swappedString;
+    BENCHMARK_FUNCTION( ecdsa_sign, private_key.data(), 4, message_hash.data(), 4, r.data(), s.data() );
+}
+
+int testCorrectness(const starkware::PrimeFieldElement::ValueType& privateKey)
+{
+    using namespace signer;
+    using namespace starkware;
+
+    const auto privateKeyFelt = PrimeFieldElement::FromBigInt( privateKey );
+
+    KeyPair keyPair( privateKey );
+    StarkCurveSigner signer( keyPair );
+
+    Message message = getOrderMessage();
+    const auto hash = message.hash();
+
+    const auto private_key = privateKeyFelt.ToMont().ToLimbs();
+    const auto message_hash = hash.ToMont().ToLimbs();
+    std::array< uint64_t, 4 > r = { 0, 0, 0, 0 };
+    std::array< uint64_t, 4 > s = { 0, 0, 0, 0 };
+
+    BENCHMARK_FUNCTION( ecdsa_sign, private_key.data(), 4, message_hash.data(), 4, r.data(), s.data() );
+
+    const auto rFelt = PrimeFieldElement::FromMont( starkware::BigInt( r ) );
+    const auto sInvFelt = PrimeFieldElement::FromMont( starkware::BigInt( s ) );
+    const auto sFelt = PrimeFieldElement::FromBigInt( sInvFelt.ToStandardForm().InvModPrime( starkware::GetEcConstants().k_order ) );
+
+    bool isValid = signer.verifyEcdsa( hash, { rFelt, sFelt } );
+    return !isValid;
 }
 
 int main()
@@ -76,33 +98,12 @@ int main()
     using namespace signer;
     using namespace starkware;
 
-//    Prng prng;
-//    using ValueType = PrimeFieldElement::ValueType;
-//
-//    // Draw test parameters.
-//    //const auto privateKey = ValueType::RandomBigInt( &prng );
-
-    const auto privateKey = 0x3c1e9550e66958296d11b60f8e8e7a7ad990d07fa65d5f7652c4a6c87d4e3cc_Z;
-    const auto privateKeyFelt = PrimeFieldElement::FromBigInt(privateKey);
-
-    KeyPair keyPair( privateKey );
-    StarkCurveSigner signer( keyPair );
-
-    Message message = getOrderMessage();
-    const auto hash = message.hash();
+    auto privateKey = 0x3c1e9550e66958296d11b60f8e8e7a7ad990d07fa65d5f7652c4a6c87d4e3cc_Z;
+    for( int i = 0; i < 100; i++ )
     {
-        const auto private_key = privateKeyFelt.ToMont().ToLimbs();
-        const auto message_hash =  hash.ToMont().ToLimbs();
-        std::array< uint64_t, 4 > r = { 0, 0, 0, 0 };
-        std::array< uint64_t, 4 > s = { 0, 0, 0, 0 };
-
-        int res = ecdsa_sign( private_key.data(), 4, message_hash.data(), 4, r.data(), s.data() );
-
-        const auto rFelt = PrimeFieldElement::FromMont(starkware::BigInt( r ) );
-        const auto sInvFelt = PrimeFieldElement::FromMont(starkware::BigInt( s ));
-        const auto sFelt = PrimeFieldElement::FromBigInt( sInvFelt.ToStandardForm().InvModPrime( starkware::GetEcConstants().k_order ) );
-
-        bool isValid = signer.verifyEcdsa( hash, { rFelt, sFelt } );
-        return res || !isValid;
+        privateKey = privateKey + 0x2_Z;
+        benchSign(privateKey);
     }
+
+    return testCorrectness(privateKey);
 }

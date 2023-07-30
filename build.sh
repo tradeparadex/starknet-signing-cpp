@@ -5,7 +5,7 @@ cd ./libs/crypto-cpp && rm -rf build
 mkdir build && cd build
 
 # Build crypto-cpp
-cmake .. && make
+cmake -DCMAKE_BUILD_TYPE=Release .. && make
 
 # Return to the root
 cd ../../../
@@ -17,4 +17,4 @@ conan install . --build=missing
 cd ../../build
 
 # Build whole project
-cmake .. && make
+cmake -DCMAKE_BUILD_TYPE=Release .. && make
