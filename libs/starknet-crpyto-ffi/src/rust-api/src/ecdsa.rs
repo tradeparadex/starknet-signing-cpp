@@ -1,6 +1,5 @@
 use starknet_core::{
     crypto::{ecdsa_sign as ecdsa_sign_rs, ecdsa_verify as ecdsa_verify_rs},
-    types::FieldElement,
 };
 use starknet_crypto::{sign as sign_rs, SignError, Signature};
 

@@ -1,4 +1,4 @@
-use starknet_crypto::{pedersen_hash as pedersen_hash_rs, FieldElement};
+use starknet_crypto::{pedersen_hash as pedersen_hash_rs};
 
 use crate::{
     constants::FELT_LIMBS_LEN,
