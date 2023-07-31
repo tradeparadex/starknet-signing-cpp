@@ -13,19 +13,18 @@
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count(); \
     std::cout << "Execution time: " << duration << " microseconds" << std::endl; \
 
-
 TEST(StarkwareCppWrapper, ecdsaSign)
 {
     using namespace starkware;
     using namespace StarkwareCppWrapper;
 
-    const PrimeFieldElement privateKeyFelt = PrimeFieldElement::FromBigInt( 0x0139fe4d6f02e666e86a6f58e65060f115cd3c185bd9e98bd829636931458f79_Z );
+    const PrimeFieldElement privateKeyFelt = PrimeFieldElement::FromBigInt( 0x0139fe4d6f02e666e86a6f58e65060f115cd3c185bd9e98bd829636931458f99_Z );
     const PrimeFieldElement hash = PrimeFieldElement::FromBigInt( 0x06fea80189363a786037ed3e7ba546dad0ef7de49fccae0e31eb658b7dd4ea76_Z );
 
     BENCHMARK_FUNCTION( Ecdsa::ecdsaSign, privateKeyFelt, hash );
 
-    EXPECT_EQ(funcRes.first, PrimeFieldElement::FromBigInt(0x061ec782f76a66f6984efc3a1b6d152a124c701c00abdd2bf76641b4135c770f_Z));
-    EXPECT_EQ(funcRes.second, PrimeFieldElement::FromBigInt(0x04e44e759cea02c23568bb4d8a09929bbca8768ab68270d50c18d214166ccd9a_Z));
+    EXPECT_EQ(funcRes.first, PrimeFieldElement::FromBigInt(0x00798045aea59f67ac05a0aaedbcaf7f55156b9d0cd152fc91b6649a5fba8c13_Z));
+    EXPECT_EQ(funcRes.second, PrimeFieldElement::FromBigInt(0x034a4770ff3bcf9d9a923a26232ae134b543cf6885768ac9c42e55fc79e531c4_Z));
 }
 
 TEST(StarkwareCppWrapper, ecdsaSignAndVerify)
@@ -49,7 +48,7 @@ TEST(StarkwareCppWrapper, signRSVerifyCPP)
     using namespace StarkwareCppWrapper;
 
     const PrimeFieldElement hash = PrimeFieldElement::FromBigInt( 0x02ff954a62a6191411aa051588c65a4ac37690ce781bb345bb886ac947630e5b_Z );
-    const PrimeFieldElement privateKeyFelt = PrimeFieldElement::FromBigInt( 0x0139fe4d6f02e666e86a6f58e65060f115cd3c185bd9e98bd829636931458f79_Z );
+    const PrimeFieldElement privateKeyFelt = PrimeFieldElement::FromBigInt( 0x0139fe4d6f02e666e86a6f58e65060f115cd3c185bd9e98bd829636931458f99_Z );
     const auto publicKey = GetPublicKey( privateKeyFelt.ToStandardForm() );
 
     // Get signature from rust
