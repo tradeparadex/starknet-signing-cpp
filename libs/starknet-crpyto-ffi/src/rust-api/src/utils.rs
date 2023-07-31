@@ -24,3 +24,12 @@ pub(crate) fn raw_pointer_into_felt(src: *const u64) -> FieldElement {
 
     FieldElement::from_mont(output)
 }
+
+#[macro_export]
+macro_rules! validate_ptr {
+    ($ptr: expr, $error_code: expr) => {
+        if $ptr == std::ptr::null() {
+            return $error_code;
+        }
+    };
+}

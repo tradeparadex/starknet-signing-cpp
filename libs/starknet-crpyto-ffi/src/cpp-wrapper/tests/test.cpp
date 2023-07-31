@@ -1,8 +1,11 @@
 #include <iostream>
+
 #include <starkware/algebra/prime_field_element.h>
 #include <starkware/crypto//elliptic_curve_constants.h>
+#include "starkware/crypto/pedersen_hash.h"
 
 #include "Ecdsa.hpp"
+#include "PedersenHash.hpp"
 
 #define BENCHMARK_FUNCTION(func, ...)                             \
     auto start_time = std::chrono::high_resolution_clock::now(); \
@@ -111,6 +114,32 @@ inline int testSignAndVerifyCpp(const starkware::PrimeFieldElement::ValueType& p
 }
 
 
+int nativePedersenHash()
+{
+    using namespace starkware;
+
+    const auto x = PrimeFieldElement::FromBigInt(
+        0x3d937c035c878245caf64531a5756109c53068da139362728feb561405371cb_Z);
+    const auto y = PrimeFieldElement::FromBigInt(
+        0x208a0a10250e382e1e4bbe2880906c2791bf6275695e02fbbc6aeff9cd8b31a_Z);
+
+    BENCHMARK_FUNCTION(PedersenHash, x, y);
+    std::cout << funcRes << std::endl;
+}
+
+int rsPedersenHash()
+{
+    using namespace starkware;
+
+    const auto x = PrimeFieldElement::FromBigInt(
+        0x3d937c035c878245caf64531a5756109c53068da139362728feb561405371cb_Z);
+    const auto y = PrimeFieldElement::FromBigInt(
+        0x208a0a10250e382e1e4bbe2880906c2791bf6275695e02fbbc6aeff9cd8b31a_Z);
+
+    BENCHMARK_FUNCTION(StarkwareCppWrapper::PedersenHash::pedersenHash, x, y);
+    std::cout << funcRes << std::endl;
+}
+
 int main()
 {
     using namespace starkware;
@@ -118,11 +147,16 @@ int main()
 
     int code = 0;
 
-    BigInt privateKey = 0x3c1e9550e66958296d11b60f8e8e7a7ad990d07fa65d5f7652c4a6c87d4e3cc_Z;
+//    for( int i = 0; i < 100; i++ )
+//    {
+//        nativePedersenHash();
+//    }
+
+    BigInt privateKey = 0x3c1e9550e66958296d11b60f8e8e7a7ad990d07fa65d5f7652c4a6c87d4eccc_Z;
     for( int i = 0; i < 100; i++ )
     {
         privateKey = privateKey + 0x2_Z;
-        code += testSignAndVerify(privateKey);
+        code += benchSign(privateKey);
     }
 
     return code;

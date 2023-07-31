@@ -1,9 +1,15 @@
 #include <numeric>
 #include <iostream>
+#include "keccak.hpp"
+#include "Config.hpp"
+
 #include "Utils.hpp"
 #include "UtilsImpl.hpp"
-
-#include "keccak.hpp"
+#if ENABLE_CPP
+#include <starkware/crypto/pedersen_hash.h>
+#else
+#include "PedersenHash.hpp"
+#endif
 
 namespace signer
 {
@@ -13,7 +19,11 @@ PrimeFieldElement hashElements( const std::vector< PrimeFieldElement >& elements
     constexpr PrimeFieldElement numInitValue = PrimeFieldElement::Zero();
 
     auto hash = []( const PrimeFieldElement& a, const PrimeFieldElement& b ) {
+#if ENABLE_CPP
         return PedersenHash( a, b );
+#else
+        return StarkwareCppWrapper::PedersenHash::pedersenHash(a, b);
+#endif
     };
 
     const PrimeFieldElement a = std::accumulate( elements.begin(), elements.end(), numInitValue, hash );

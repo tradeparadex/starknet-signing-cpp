@@ -2,6 +2,8 @@
 #include "StarkCurveSigner.hpp"
 #include "UtilsImpl.hpp"
 
+#include "Config.hpp"
+
 #if ENABLE_CPP
 #include <starkware/crypto/elliptic_curve_constants.h>
 #endif
