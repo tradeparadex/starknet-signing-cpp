@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.5)
 
-project(tests LANGUAGES CXX)
+project(CppWrapperTest LANGUAGES CXX)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -15,9 +15,6 @@ enable_testing()
 
 include_directories(${CMAKE_SOURCE_DIR}/libs/crypto-cpp/src)
 
-add_executable(test test.cpp TestUtils.cpp)
-target_link_libraries(test signer gtest gtest_main gmock pthread)
-add_test(test test)
-
-add_executable(clientTest ClientTest.cpp)
-target_link_libraries(clientTest curlpp_static signer)
+add_executable(cppWrapperTest test.cpp)
+target_link_libraries(cppWrapperTest starkware_cpp_wrapper starkware_rust_api gtest gtest_main gmock pthread)
+add_test(cppWrapperTest cppWrapperTest)
