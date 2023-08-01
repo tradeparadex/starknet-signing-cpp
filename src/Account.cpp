@@ -115,7 +115,7 @@ std::string Account::getJwtToken( const std::string& url ) const
 
         std::string signatureHeader = "PARADEX-STARKNET-SIGNATURE: [\"%1\", \"%2\"]";
         replace( &signatureHeader, "%1", signature.first );
-        replace( &signatureHeader, "%2", signature.second.ToStandardForm().InvModPrime( starkware::GetEcConstants().k_order ) );
+        replace( &signatureHeader, "%2", signature.second );
 
         std::string hashHeader = "PARADEX-STARKNET-MESSAGE-HASH: %1";
         replace( &hashHeader, "%1", hash );

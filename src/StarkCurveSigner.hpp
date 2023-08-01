@@ -25,8 +25,10 @@ class StarkCurveSigner
   public:
     StarkCurveSigner( const KeyPair& theKeyPair );
 
-    // TODO: implement generate_k
+    // TODO: implement c++ generate_k
     starkware::Signature signMessage( const EncodableIface& message, const starkware::PrimeFieldElement::ValueType& k ) const;
+    starkware::Signature signMessage( const EncodableIface& message) const;
+
     bool verifyEcdsa(const starkware::PrimeFieldElement& hash, const starkware::Signature& signature) const;
 
   private:

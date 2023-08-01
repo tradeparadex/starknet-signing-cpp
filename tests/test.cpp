@@ -6,6 +6,7 @@
 #include <starkware/algebra/prime_field_element.h>
 #include <starkware/crypto/ecdsa.h>
 
+#include "TestUtils.hpp"
 #include "UtilsImpl.hpp"
 #include "StarknetDomain.hpp"
 #include "Auth.hpp"
@@ -46,16 +47,6 @@ TEST( Utils, getSelectorFromName )
     }
 }
 
-signer::StarknetDomain getStarknetDomain()
-{
-    using namespace starkware;
-
-    const BigInt< 4 > chainId = 0x505249564154455F534E5F504F54435F474F45524C49_Z;
-    StarknetDomain domain( chainId );
-
-    return domain;
-}
-
 TEST( StarknetDomain, pedersenEncode )
 {
     using namespace starkware;
@@ -83,21 +74,6 @@ TEST( StarknetDomain, hash )
     EXPECT_EQ( res.ToStandardForm(), 0x6A9F6F5D2B1C9AD4528A1EB8F357FC7E51F5C01AD09120D46075023164BD1C4_Z );
 }
 
-Order getOrder(std::chrono::milliseconds timestamp)
-{
-    using namespace std::chrono;
-
-    const char* strMarket = "ETH-USD-PERP";
-    constexpr OrderType orderType = OrderType::Market;
-    constexpr OrderSide orderSide = OrderSide::Buy;
-    constexpr double size = 0.1;
-
-    Order order(strMarket, orderSide, orderType, size);
-    order.setTimestamp(timestamp);
-
-    return order;
-}
-
 TEST( Order, hash )
 {
     using namespace std::chrono;
@@ -110,15 +86,6 @@ TEST( Order, hash )
     const auto expected = 0x067a4beeeff01460f2fab511a313b2971514b0e433981cdca8ad146f7cb7191e_Z;
 
     EXPECT_EQ(res.ToStandardForm(), expected);
-}
-
-Auth getAuth(std::chrono::seconds now, std::chrono::seconds expiry)
-{
-    Auth auth;
-    auth.setNow(now);
-    auth.setExpiry(expiry);
-
-    return auth;
 }
 
 TEST(Auth, hash)
@@ -135,21 +102,6 @@ TEST(Auth, hash)
     EXPECT_EQ(res.ToStandardForm(), expected);
 }
 
-Message getOrderMessage()
-{
-    using namespace std::chrono;
-
-    constexpr milliseconds timestamp = 1690187319619ms;
-    const auto address = 0x1F06D2232E3EB0D8BD4B9294A930D553F610A0D7B24BC52D9472C7BDA478927_Z;
-
-    const PrimeFieldElement accountAddress = PrimeFieldElement::FromBigInt( address );
-    Order order = getOrder(timestamp);
-    StarknetDomain starknetDomain = getStarknetDomain();
-
-    Message message( accountAddress, std::make_shared< StarknetDomain >( starknetDomain ), std::make_shared< Order >( order ) );
-    return message;
-}
-
 
 TEST(OrderMessage, hash)
 {
@@ -164,11 +116,8 @@ TEST(StarkCurveSigner, signAndVerify)
 {
     using namespace starkware;
 
-    Prng prng;
-    using ValueType = PrimeFieldElement::ValueType;
-
     // Draw test parameters.
-    const auto privateKey = ValueType::RandomBigInt( &prng );
+    const auto privateKey = 0x3c1e9550e66958296d11b60f8e8e7a7ad990d07fa65d5f7652c4a6c87d4e3cc_Z;
 
     KeyPair keyPair( privateKey );
     StarkCurveSigner signer( keyPair );
@@ -179,6 +128,25 @@ TEST(StarkCurveSigner, signAndVerify)
 
     const Signature res = signer.signMessage( message, k );
     EXPECT_TRUE( signer.verifyEcdsa( h, res ) );
+}
+
+TEST(StarkCurveSigner, signSpeedTest)
+{
+    using namespace starkware;
+
+    const auto privateKey = 0x3c1e9550e66958296d11b60f8e8e7a7ad990d07fa65d5f7652c4a6c87d4e3cc_Z;
+    const EcPoint< PrimeFieldElement > publicKey(
+        PrimeFieldElement::FromBigInt( 0x77a3b314db07c45076d11f62b6f9e748a39790441823307743cf00d6597ea43_Z ),
+        PrimeFieldElement::FromBigInt( 0x54d7beec5ec728223671c627557efc5c9a6508425dc6c900b7741bf60afec06_Z ) );
+
+    KeyPair keyPair( privateKey, publicKey );
+    StarkCurveSigner signer( keyPair );
+
+    Message message = getOrderMessage();
+    const auto k = 0x54d7beec5ec728223671c627557efc5c9a6508425dc6c900b7741bf60afec06_Z;
+
+    signer.signMessage( message, k );
+    EXPECT_TRUE(true);
 }
 
 

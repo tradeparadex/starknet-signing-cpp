@@ -1,0 +1,15 @@
+[package]
+name = "starkware-rust-api"
+version = "0.1.0"
+edition = "2021"
+authors = ["Edwin Paco <edwinswatpako@gmail.com>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+starknet-crypto = "0.6.0"
+starknet-core = "0.5.1"
+
+[lib]
+name = "starkware_rust_api"
+crate-type = ["staticlib"]

@@ -5,7 +5,6 @@
 #include <algorithm>
 
 #include <starkware/algebra/prime_field_element.h>
-#include <starkware/crypto/pedersen_hash.h>
 #include "hash_types.hpp"
 
 namespace signer
