@@ -34,7 +34,7 @@
 # Folders
 build
 cmake-build-debug
-libs/starknet-crpyto-ffi/src/rust-api/target
+libs/starknet-crypto-ffi/src/rust-api/target
 
 # IDE related
 .idea

@@ -40,7 +40,7 @@ project-root/build/tests/clientTest
 
 - To run cpp wrapper tests
 ```
-project-root/build/libs/starknet-crpyto-ffi/src/cpp-wrapper/tests/cppWrapperTest
+project-root/build/libs/starknet-crypto-ffi/src/cpp-wrapper/tests/cppWrapperTest
 ```
 
 # Third party dependencies
