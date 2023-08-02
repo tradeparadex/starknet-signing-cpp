@@ -23,7 +23,10 @@ In root run
     ```
     ./build.sh
     ```
-    
+3) The compiled library resides in
+   ```
+   project-root/build/src/libsigner.a
+   ```    
 # Running tests
 
 After successful compilation executables shall be located in: `project-root/build/tests`.
