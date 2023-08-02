@@ -160,9 +160,7 @@ TEST(Performance, test)
 {
     using namespace std::chrono;
     Prng prng;
-    // using ValueType = PrimeFieldElement::ValueType;
     const BigInt<2> privateKey = BigInt<2>::RandomBigInt( &prng );
-    // const auto privateKey = 0x3c1e9550e66958296d11b60f8e8e7a7ad990d07fa65d5f7652c4a6c87d4e3cc_Z;
     KeyPair keyPair( privateKey );
     StarknetDomain starknetDomain(std::string("PRIVATE_SN_POTC_GOERLI"));
     StarkCurveSigner signer( keyPair );
@@ -185,13 +183,6 @@ TEST(Performance, test)
     auto ts_signature = high_resolution_clock::now();
     std::cout << "signature:" << duration_cast<microseconds>(ts_signature - ts_msg_hash).count()  << " micros" << std::endl;
     std::cout << "total time:" << duration_cast<microseconds>(ts_signature - ts_start).count()  << " micros" << std::endl;
-    // BENCHMARK_FUNCTION(getOrderMessage);
-    // Message message = funcRes; 
-    // BENCHMARK_FUNCTION(message.hash);
-    // const auto h = funcRes; 
-    // const auto k = 0x54d7beec5ec728223671c627557efc5c9a6508425dc6c900b7741bf60afec06_Z;
-    // BENCHMARK_FUNCTION(signer.signMessage, message, k );
-    //const Signature res = funcRes;
 }
 
 } // namespace tests
