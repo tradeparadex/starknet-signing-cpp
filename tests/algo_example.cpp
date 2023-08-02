@@ -7,6 +7,7 @@
 #include <starkware/crypto/ecdsa.h>
 
 #include "Utils.hpp"
+
 // #include "UtilsImpl.hpp"
 // #include "StarknetDomain.hpp"
 // #include "Auth.hpp"
@@ -24,8 +25,9 @@ int main()
     std::getline(std::cin, privateKey);
     std::cout << "Please enter SN address:";
     std::getline(std::cin, address);
-    const auto pk_int = strToBigInt( privateKey.c_str() );
-    const auto ad_int = strToBigInt( address.c_str() );
+
+    const auto pk_int = signer::strToBigInt256( privateKey.c_str() );
+    const auto ad_int = signer::strToBigInt256( address.c_str() );
     std::cout << "private key int:" << pk_int << std::endl;
     std::cout << "address int:" << ad_int << std::endl;
 

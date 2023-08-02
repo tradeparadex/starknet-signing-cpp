@@ -56,7 +56,7 @@ constexpr std::array< uint64_t, N > bigIntToArray( const BigInt< N >& value );
 template< size_t StrLen >
 BigInt< StrToUint64Len< StrLen >::value > strToBigInt( const char* str );
 
-BigInt< 4 > strToBigInt( const char* str);
+BigInt< 4 > strToBigInt256( const char* str);
 PrimeFieldElement strToFelt(const char* str, size_t len);
 
 /// string shall be supplied in ascii encoding
