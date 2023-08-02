@@ -21,6 +21,3 @@ add_test(test test)
 
 add_executable(clientTest ClientTest.cpp)
 target_link_libraries(clientTest curlpp_static signer)
-
-add_executable(perf_test perf_test.cpp)
-target_link_libraries(perf_test curlpp_static signer)
