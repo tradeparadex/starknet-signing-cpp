@@ -41,6 +41,14 @@ BigInt< 4 > getSelectorFromName( const char* name, size_t len )
     return numMask & reversed;
 }
 
+BigInt< 4 > strToBigInt256( const char* str)
+{
+    std::array< uint64_t, 4 > limbs = { 0, 0, 0, 0 };
+    strToUint64ArrayImpl( str, strlen( str ), limbs.data(), limbs.size() );
+
+    return BigInt( limbs );
+}
+
 PrimeFieldElement strToFelt( const char* str, size_t len )
 {
     std::array< uint64_t, 4 > limbs = { 0, 0, 0, 0 };

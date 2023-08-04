@@ -20,6 +20,13 @@ namespace signer
 namespace tests
 {
 
+#define BENCHMARK_FUNCTION(func, ...)                             \
+    auto start_time = std::chrono::high_resolution_clock::now(); \
+    auto funcRes = func(__VA_ARGS__);                                        \
+    auto end_time = std::chrono::high_resolution_clock::now();   \
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count(); \
+    std::cout << "Execution time: " << duration << " microseconds" << std::endl; \
+
 TEST( Utils, getSelectorFromName )
 {
     using namespace starkware;
@@ -149,6 +156,34 @@ TEST(StarkCurveSigner, signSpeedTest)
     EXPECT_TRUE(true);
 }
 
+TEST(Performance, test)
+{
+    using namespace std::chrono;
+    Prng prng;
+    const BigInt<2> privateKey = BigInt<2>::RandomBigInt( &prng );
+    KeyPair keyPair( privateKey );
+    StarknetDomain starknetDomain(std::string("PRIVATE_SN_POTC_GOERLI"));
+    StarkCurveSigner signer( keyPair );
+    const auto address = 0x1F06D2232E3EB0D8BD4B9294A930D553F610A0D7B24BC52D9472C7BDA478927_Z;
+    const PrimeFieldElement accountAddress = PrimeFieldElement::FromBigInt( address );
+
+    auto ts_start = std::chrono::high_resolution_clock::now();
+    auto order = signer::Order("ETH-USD-PERP", OrderSide::Buy, OrderType::Limit, 0.1, Uint256(189000000000));
+    auto ts_order = std::chrono::high_resolution_clock::now();
+    std::cout << "order:" << duration_cast<microseconds>(ts_order - ts_start).count()  << " micros" << std::endl;
+    Message message( accountAddress, std::make_shared< StarknetDomain >( starknetDomain ), std::make_shared< Order >( order ) );
+    auto ts_msg = std::chrono::high_resolution_clock::now();
+    std::cout << "message:" << duration_cast<microseconds>(ts_msg - ts_order).count()  << " micros" << std::endl;
+    const auto h = message.hash();
+    auto ts_msg_hash = high_resolution_clock::now();
+    std::cout << "message hash:" << duration_cast<microseconds>(ts_msg_hash - ts_msg).count()  << " micros" << std::endl;
+    
+    const auto k = 0x54d7beec5ec728223671c627557efc5c9a6508425dc6c900b7741bf60afec06_Z;
+    const Signature res = signer.signMessage( message, k );
+    auto ts_signature = high_resolution_clock::now();
+    std::cout << "signature:" << duration_cast<microseconds>(ts_signature - ts_msg_hash).count()  << " micros" << std::endl;
+    std::cout << "total time:" << duration_cast<microseconds>(ts_signature - ts_start).count()  << " micros" << std::endl;
+}
 
 } // namespace tests
 } // namespace signer
