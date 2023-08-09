@@ -1,6 +1,8 @@
 #pragma once
 
+#include <limits>
 #include "keccak.hpp"
+
 #include "Utils.hpp"
 
 namespace signer

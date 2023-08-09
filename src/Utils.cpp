@@ -1,10 +1,14 @@
 #include <numeric>
 #include <iostream>
+#include <cstring>
+#include <limits>
 #include "keccak.hpp"
-#include "Config.hpp"
+#include "ApiException.hpp"
 
+#include "Config.hpp"
 #include "Utils.hpp"
 #include "UtilsImpl.hpp"
+
 #if ENABLE_CPP
 #include <starkware/crypto/pedersen_hash.h>
 #else
@@ -22,7 +26,15 @@ PrimeFieldElement hashElements( const std::vector< PrimeFieldElement >& elements
 #if ENABLE_CPP
         return PedersenHash( a, b );
 #else
-        return StarkwareCppWrapper::PedersenHash::pedersenHash(a, b);
+        try
+        {
+            return StarkwareCppWrapper::PedersenHash::pedersenHash( a, b );
+        }
+        catch( StarkwareCppWrapper::ApiException& e )
+        {
+            std::cerr << e.what() << std::endl;
+            throw e;
+        }
 #endif
     };
 
@@ -41,10 +53,10 @@ BigInt< 4 > getSelectorFromName( const char* name, size_t len )
     return numMask & reversed;
 }
 
-BigInt< 4 > strToBigInt256( const char* str)
+BigInt< 4 > strToBigInt256( const char* str )
 {
     std::array< uint64_t, 4 > limbs = { 0, 0, 0, 0 };
-    strToUint64ArrayImpl( str, strlen( str ), limbs.data(), limbs.size() );
+    strToUint64ArrayImpl( str, std::strlen( str ), limbs.data(), limbs.size() );
 
     return BigInt( limbs );
 }
@@ -69,7 +81,7 @@ void strToUint64ArrayImpl( const char* src, size_t srcLen, uint64_t* dest, size_
         uint8_t charCounter = 0;
         while( len != 0 && charCounter != numIterations )
         {
-            const uint64_t currentChar = (uint64_t)*(src + len - 1);
+            const uint64_t currentChar = ( uint64_t ) * ( src + len - 1 );
             dest[ i ] |= currentChar << CHAR_BIT * charCounter;
 
             charCounter++;
@@ -99,4 +111,4 @@ constexpr void swapEndian( uint64_t* arr, size_t len )
     }
 }
 
-} // signer
+} // namespace signer
