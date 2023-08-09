@@ -92,9 +92,7 @@ std::string Account::getJwtToken( const std::string& url ) const
     const Message message( address, std::make_shared< StarknetDomain >( starknetDomain ), std::make_shared< Auth >( auth ) );
     const auto hash = message.hash();
     const auto signature = signer.signMessage( message );
-
-    signer.verifyEcdsa( hash, signature );
-
+    
     const uint64_t now = auth.getNow().count();
     const uint64_t expiry = auth.getExpiry().count();
 
