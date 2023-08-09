@@ -1,7 +1,9 @@
 #include "Ecdsa.hpp"
+#include "ApiException.hpp"
+
 #include "StarkCurveSigner.hpp"
 #include "UtilsImpl.hpp"
-
+#include "SignerException.hpp"
 #include "Config.hpp"
 
 #if ENABLE_CPP
@@ -39,13 +41,23 @@ starkware::Signature StarkCurveSigner::signMessage( const EncodableIface& messag
     const PrimeFieldElement messageHash = hashElements( encodedMessage );
 
 #if ENABLE_CPP
-    const Signature signature =  SignEcdsa( keyPair.privateKey, messageHash, k );
-    const PrimeFieldElement sInv = PrimeFieldElement::FromBigInt(signature.second.ToStandardForm().InvModPrime( GetEcConstants().k_order ));
-    return {signature.first, sInv};
+    ASSERT( "CPP version disabled" );
+    const Signature signature = SignEcdsa( keyPair.privateKey, messageHash, k );
+    const PrimeFieldElement sInv =
+        PrimeFieldElement::FromBigInt( signature.second.ToStandardForm().InvModPrime( GetEcConstants().k_order ) );
+    return { signature.first, sInv };
 #else
     const PrimeFieldElement privateKeyFelt = PrimeFieldElement::FromBigInt( keyPair.privateKey );
     const PrimeFieldElement kFelt = PrimeFieldElement::FromBigInt( k );
-    return StarkwareCppWrapper::Ecdsa::ecdsaSign( privateKeyFelt, messageHash, kFelt );
+    try
+    {
+        return StarkwareCppWrapper::Ecdsa::ecdsaSign( privateKeyFelt, messageHash, kFelt );
+    }
+    catch( StarkwareCppWrapper::ApiException& e )
+    {
+        std::cerr << e.what() << std::endl;
+        throw e;
+    }
 #endif
 }
 
@@ -56,16 +68,33 @@ starkware::Signature StarkCurveSigner::signMessage( const EncodableIface& messag
     const PrimeFieldElement messageHash = hashElements( encodedMessage );
 
     const PrimeFieldElement privateKeyFelt = PrimeFieldElement::FromBigInt( keyPair.privateKey );
-    return StarkwareCppWrapper::Ecdsa::ecdsaSign( privateKeyFelt, messageHash );
+    try
+    {
+        return StarkwareCppWrapper::Ecdsa::ecdsaSign( privateKeyFelt, messageHash );
+    }
+    catch( StarkwareCppWrapper::ApiException& e )
+    {
+        std::cerr << e.what() << std::endl;
+        throw e;
+    }
 }
 
 bool StarkCurveSigner::verifyEcdsa(const starkware::PrimeFieldElement& hash, const starkware::Signature& signature) const
 {
 #if ENABLE_CPP
+    ASSERT("CPP version disabled");
     return VerifyEcdsa( keyPair.publicKey, hash, signature );
 #else
-    return StarkwareCppWrapper::Ecdsa::ecdsaVerify( keyPair.publicKey.x, hash, signature );
+    try
+    {
+        return StarkwareCppWrapper::Ecdsa::ecdsaVerify( keyPair.publicKey.x, hash, signature );
+    }
+    catch( StarkwareCppWrapper::ApiException& e )
+    {
+        std::cerr << e.what() << std::endl;
+        throw e;
+    }
 #endif
 }
 
-} // namepsace signer
+} // namespace signer

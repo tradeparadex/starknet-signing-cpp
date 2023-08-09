@@ -1,4 +1,5 @@
 #include "PedersenHash.hpp"
+#include "ApiException.hpp"
 
 namespace StarkwareCppWrapper
 {
@@ -13,6 +14,7 @@ starkware::PrimeFieldElement PedersenHash::pedersenHash( const starkware::PrimeF
 
     std::array< uint64_t, 4 > rawHash = { 0, 0, 0, 0 };
     int code = pedersen_hash( rawX.data(), 4, rawY.data(), 4, rawHash.data() );
+    apiCheckResult(code);
 
     return PrimeFieldElement::FromMont( BigInt( rawHash ) );
 }

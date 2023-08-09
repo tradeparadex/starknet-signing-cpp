@@ -1,11 +1,12 @@
 #include <stdexcept>
+#include <iostream>
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
-#include "starkware/crypto//elliptic_curve_constants.h"
 
 #include "Account.hpp"
 #include "Utils.hpp"
+#include "SignerException.hpp"
 
 namespace signer
 {
@@ -89,12 +90,11 @@ std::string Account::getJwtToken( const std::string& url ) const
     const StarknetDomain starknetDomain = createStarknetDomain();
 
     const Message message( address, std::make_shared< StarknetDomain >( starknetDomain ), std::make_shared< Auth >( auth ) );
-
     const auto hash = message.hash();
+    const auto signature = signer.signMessage( message );
 
-    // TODO: implement generate_k
-    const auto k = 0x54d7beec5ec728223671c627557efc5c9a6508425dc6c900b7741bf60afec06_Z;
-    const auto signature = signer.signMessage( message, k );
+    signer.verifyEcdsa( hash, signature );
+
     const uint64_t now = auth.getNow().count();
     const uint64_t expiry = auth.getExpiry().count();
 
@@ -158,6 +158,11 @@ std::string Account::getJwtToken( const std::string& url ) const
     catch( curlpp::LogicError& e )
     {
         std::cerr << "curlpp::LogicError: " << e.what() << std::endl;
+        throw e;
+    }
+    catch( SignerException& e )
+    {
+        std::cerr << e.what() << std::endl;
         throw e;
     }
 }

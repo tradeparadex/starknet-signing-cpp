@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "StarknetDomain.hpp"
 #include "UtilsImpl.hpp"
 
@@ -29,7 +31,7 @@ std::vector< starkware::PrimeFieldElement > StarknetDomain::pedersenEncode() con
     const auto tmpName = signer::strToBigInt< numNameLen >( strName );
 
     const BigInt< 4 > name = signer::bigIntToUint256( tmpName );
-    const BigInt< 4 > typeNameHash = signer::getSelectorFromName( strStarknetDomain, strlen( strStarknetDomain ) );
+    const BigInt< 4 > typeNameHash = signer::getSelectorFromName( strStarknetDomain, std::strlen( strStarknetDomain ) );
 
     return std::vector< starkware::PrimeFieldElement >( { PrimeFieldElement::FromBigInt( typeNameHash ),
         PrimeFieldElement::FromBigInt( name ), PrimeFieldElement::FromBigInt( chainId ), PrimeFieldElement::FromBigInt( numVersionId ) } );

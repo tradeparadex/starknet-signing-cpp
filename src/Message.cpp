@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "UtilsImpl.hpp"
 #include "Message.hpp"
 
@@ -17,7 +19,7 @@ std::vector< starkware::PrimeFieldElement > Message::pedersenEncode() const
 
     const char* strStarknetMessage = "StarkNet Message";
 
-    const PrimeFieldElement starknetMessage = strToFelt( strStarknetMessage, strlen( strStarknetMessage ) );
+    const PrimeFieldElement starknetMessage = strToFelt( strStarknetMessage, std::strlen( strStarknetMessage ) );
     const PrimeFieldElement domainHash = domain->hash();
     const PrimeFieldElement primaryTypeHash = primaryType->hash();
 

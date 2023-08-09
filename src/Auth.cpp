@@ -1,4 +1,5 @@
 #include <chrono>
+#include <cstring>
 
 #include "Auth.hpp"
 #include "UtilsImpl.hpp"
@@ -41,13 +42,12 @@ std::vector< starkware::PrimeFieldElement > Auth::pedersenEncode() const
     const char* strRequest = "Request(method:felt,path:felt,body:felt,timestamp:felt,expiration:felt)";
     const char* strMethod = "POST";
     const char* strPath = "/v1/auth";
-    // TODO: check if zero
     const char* strBody = "";
 
-    const PrimeFieldElement request = PrimeFieldElement::FromBigInt( getSelectorFromName( strRequest, strlen( strRequest ) ) );
-    const PrimeFieldElement method = strToFelt( strMethod, strlen( strMethod ) );
-    const PrimeFieldElement path = strToFelt( strPath, strlen( strPath ) );
-    const PrimeFieldElement body = strToFelt( strBody, strlen( strBody ) );
+    const PrimeFieldElement request = PrimeFieldElement::FromBigInt( getSelectorFromName( strRequest, std::strlen( strRequest ) ) );
+    const PrimeFieldElement method = strToFelt( strMethod, std::strlen( strMethod ) );
+    const PrimeFieldElement path = strToFelt( strPath, std::strlen( strPath ) );
+    const PrimeFieldElement body = strToFelt( strBody, std::strlen( strBody ) );
     const PrimeFieldElement timestamp = PrimeFieldElement::FromUint( now.count() );
     const PrimeFieldElement expiration = PrimeFieldElement::FromUint( expiry.count() );
 

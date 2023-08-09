@@ -1,9 +1,9 @@
 #include <chrono>
-#include <exception>
-#include <stdexcept>
+#include <cstring>
 
 #include "Order.hpp"
 #include "UtilsImpl.hpp"
+#include "SignerException.hpp"
 
 namespace signer
 {
@@ -63,7 +63,7 @@ Order::Order( const std::string& theMarket, OrderSide theOrderSide, OrderType th
 
     if( orderType == OrderType::Limit && !theLimitPrice.has_value() )
     {
-        throw new std::invalid_argument( "If OrderType::Limit theLimitPrice shall exist" );
+        throw new SignerException( "If OrderType::Limit theLimitPrice shall exist" );
     }
     limitPrice = theLimitPrice;
 }
@@ -87,9 +87,9 @@ std::vector< starkware::PrimeFieldElement > Order::pedersenEncode() const
 {
     using namespace starkware;
 
-    const char const* strOrderTypeName = "Order(timestamp:felt,market:felt,side:felt,orderType:felt,size:felt,price:felt)";
+    const char* strOrderTypeName = "Order(timestamp:felt,market:felt,side:felt,orderType:felt,size:felt,price:felt)";
 
-    const BigInt< 4 > tmpOrderTypeName = signer::getSelectorFromName( strOrderTypeName, strlen( strOrderTypeName ) );
+    const BigInt< 4 > tmpOrderTypeName = signer::getSelectorFromName( strOrderTypeName, std::strlen( strOrderTypeName ) );
     const PrimeFieldElement orderTypeName = PrimeFieldElement::FromBigInt( tmpOrderTypeName );
     const PrimeFieldElement timestamp = PrimeFieldElement::FromUint( this->timestamp.count() );
     const PrimeFieldElement market = signer::strToFelt( this->market.c_str(), this->market.length() );

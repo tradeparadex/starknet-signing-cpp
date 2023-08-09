@@ -1,7 +1,6 @@
 #include <chrono>
 #include <vector>
 
-#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include <starkware/algebra/prime_field_element.h>
 #include <starkware/crypto/ecdsa.h>
