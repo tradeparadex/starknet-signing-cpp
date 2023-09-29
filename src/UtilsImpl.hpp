@@ -1,6 +1,6 @@
 #pragma once
 
-#include <limits>
+#include <climits>
 #include "keccak.hpp"
 
 #include "Utils.hpp"
