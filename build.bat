@@ -18,9 +18,8 @@ cd ..\..\
 cd libs\curlpp
 
 REM Run conan to install libcurl
-@REM C:\Users\edwin\AppData\Local\Programs\Python\Python39\Scripts\conan.exe install . --build=missing
+REM C:\Users\edwin\AppData\Local\Programs\Python\Python39\Scripts\conan.exe install . --build=missing
 conan install . --build=missing
-
 
 cd ..\..\build
 

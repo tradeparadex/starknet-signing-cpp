@@ -5,6 +5,7 @@ file(GLOB StarkwareCppWrapperSources *.cpp *.hpp)
 include_directories(${CMAKE_SOURCE_DIR}/libs/crypto-cpp/src)
 add_library(starkware_cpp_wrapper STATIC ${StarkwareCppWrapperSources})
 
+# TODO: link as a target
 # link starkware static libs
 set (STARKWARE_ALGEBRA ${CMAKE_SOURCE_DIR}/libs/crypto-cpp/build/src/starkware/algebra/libalgebra.a)
 set (STARKWARE_CRYPTO ${CMAKE_SOURCE_DIR}/libs/crypto-cpp/build/src/starkware/crypto/libcrypto.a)
