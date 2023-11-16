@@ -4,9 +4,8 @@ rmdir /s /q build
 mkdir build
 
 REM Run conan to install libcurl
-REM C:\Users\edwin\AppData\Local\Programs\Python\Python39\Scripts\conan.exe install . --build=missing
 cd libs\curlpp
-conan install . --build=missing
+conan install . --build=missing --s build_type=Release
 cd ..\..\build
 
 REM Generate Visual Studio project files for the whole project
