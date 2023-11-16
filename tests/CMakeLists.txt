@@ -13,7 +13,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 enable_testing()
 
-if(NOT WIN_32)
+if(NOT ${WIN_32})
     list(APPEND OPTIONAL_LIBS pthread)
 endif()
 
