@@ -11,4 +11,4 @@ cd ..\..\build
 REM Generate Visual Studio project files for the whole project
 cmake -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Release ..
 REM Build the whole project using Visual Studio's MSBuild
-cmake --build .
+cmake --build . --target test
