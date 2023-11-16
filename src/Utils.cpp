@@ -76,7 +76,7 @@ void strToUint64ArrayImpl( const char* src, size_t srcLen, uint64_t* dest, size_
     constexpr uint8_t numIterations = sizeof( uint64_t ) / sizeof( char );
 
     size_t len = srcLen;
-    for( uint i = 0; i < destLen; i++ )
+    for( uint32_t i = 0; i < destLen; i++ )
     {
         uint8_t charCounter = 0;
         while( len != 0 && charCounter != numIterations )

@@ -48,7 +48,7 @@ template< size_t N >
 constexpr BigInt< N > swapEndian( const BigInt< N >& val )
 {
     std::array< uint64_t, N > arr;
-    for( uint i = 0; i < N; ++i )
+    for( size_t i = 0; i < N; ++i )
     {
         arr[ N - i - 1 ] = swapEndian( val[ i ] );
     }

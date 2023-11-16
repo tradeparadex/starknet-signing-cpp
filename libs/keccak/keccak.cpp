@@ -107,7 +107,7 @@ struct keccak256 ethash_keccak256(const uint8_t* data, size_t size) NOEXCEPT
 
 struct keccak256 hash_field_elements(const uint64_t* limbs, size_t num_elements)
 {
-    uint8_t input_buffer[num_elements * 32];
+    uint8_t* input_buffer = new uint8_t[num_elements * 32 ];
 
     for (size_t i = 0; i < num_elements; ++i) {
         for (size_t j = 0; j < 4; ++j) {
