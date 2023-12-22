@@ -146,4 +146,25 @@ std::array< uint64_t, StrToUint64Len< StrLen >::value > strToUint64Array( const 
     return arr;
 }
 
+/// Replaces token in string
+template< class T >
+void replace( std::string* header, const char* token, T val )
+{
+    constexpr uint8_t numTokenLen = 2;
+
+    std::ostringstream s;
+    s << val;
+
+    // Find the position of "%S" in the original string
+    size_t pos = header->find( token );
+
+    // Check if "%S" was found in the string
+    if( pos == std::string::npos )
+    {
+        throw new std::length_error( "Couldn't find %1" );
+    }
+
+    header->replace( pos, numTokenLen, s.str() );
+}
+
 } // namespace signer

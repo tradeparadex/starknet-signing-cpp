@@ -111,4 +111,35 @@ constexpr void swapEndian( uint64_t* arr, size_t len )
     }
 }
 
+/// Removes leading zeros in hex
+void removeLeadingZeroes( std::string* value )
+{
+    std::string& hexValue = *value;
+
+    // Check if the first 2 characters are "0x"
+    if( hexValue.length() < 2 || hexValue.substr( 0, 2 ) != "0x" )
+    {
+        return;
+    }
+
+    size_t startPos = 2;
+
+    // Find the position of the first non-zero character after "0x"
+    while( startPos < hexValue.length() && hexValue[ startPos ] == '0' )
+    {
+        startPos++;
+    }
+
+    // Extract the substring starting from the first non-zero character
+    if( startPos < hexValue.length() )
+    {
+        hexValue = "0x" + hexValue.substr( startPos );
+    }
+    else
+    {
+        // If the entire string is zeros, keep at least one zero.
+        hexValue = "0x0";
+    }
+}
+
 } // namespace signer

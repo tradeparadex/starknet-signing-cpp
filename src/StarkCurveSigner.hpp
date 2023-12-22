@@ -1,9 +1,10 @@
 #pragma once
 
 #include <utility>
+
 #include <starkware/algebra/prime_field_element.h>
-#include <starkware/crypto/ecdsa.h>
 #include <starkware/algebra/elliptic_curve.h>
+#include <starkware/crypto/ecdsa.h>
 
 #include "EncodableIface.hpp"
 
@@ -27,12 +28,12 @@ class StarkCurveSigner
 
     // TODO: implement c++ generate_k
     starkware::Signature signMessage( const EncodableIface& message, const starkware::PrimeFieldElement::ValueType& k ) const;
-    starkware::Signature signMessage( const EncodableIface& message) const;
+    starkware::Signature signMessage( const EncodableIface& message ) const;
 
-    bool verifyEcdsa(const starkware::PrimeFieldElement& hash, const starkware::Signature& signature) const;
+    bool verifyEcdsa( const starkware::PrimeFieldElement& hash, const starkware::Signature& signature ) const;
 
   private:
     KeyPair keyPair;
 };
 
-}
+} // signer

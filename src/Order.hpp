@@ -4,9 +4,10 @@
 #include <chrono>
 #include <string>
 
-#include "HashableIface.hpp"
-
 #include <starkware/algebra/prime_field_element.h>
+#include <starkware/crypto/ecdsa.h>
+
+#include "HashableIface.hpp"
 
 namespace signer
 {
@@ -17,7 +18,8 @@ enum OrderSide
     Sell
 };
 
-starkware::PrimeFieldElement encodeChainSide( OrderSide value );
+static std::string toString( OrderSide side );
+static starkware::PrimeFieldElement encodeChainSide( OrderSide value );
 
 enum OrderType
 {
@@ -25,6 +27,7 @@ enum OrderType
     Limit
 };
 
+std::string toString( OrderType type );
 starkware::PrimeFieldElement encodeOrderType( OrderType value );
 
 class Order: public HashableIface
@@ -34,20 +37,23 @@ class Order: public HashableIface
 
     // TODO: fix strToBigInt constexpr issue with always returning BigInt<4>
     Order( const std::string& theMarket, OrderSide theOrderSide, OrderType theOrderType, double theSize,
-        const std::optional< Uint256 >& theLimitPrice = std::nullopt);
-
-    virtual std::vector< starkware::PrimeFieldElement > pedersenEncode() const override;
+        const std::optional< Uint256 >& theLimitPrice = std::nullopt, const std::string& theClientId = "" );
 
     Uint256 getChainPrice() const;
 
-    void setTimestamp(std::chrono::milliseconds value);
+    void setTimestamp( std::chrono::milliseconds value );
+    std::chrono::milliseconds getTimeStamp() const;
+
+    std::string compileOrderRequestPayload( const starkware::Signature& signature ) const;
+    virtual std::vector< starkware::PrimeFieldElement > pedersenEncode() const override;
 
   private:
-    std::chrono::milliseconds timestamp;
+    std::string clientId;
     std::string market;
     OrderSide orderSide;
     OrderType orderType;
     double size;
+    std::chrono::milliseconds timestamp;
     std::optional< Uint256 > limitPrice;
 };
 

@@ -7,4 +7,4 @@ conan install . --build=missing -s build_type=Release
 
 # Build whole project
 cd ../../build
-cmake -DCMAKE_BUILD_TYPE=Release .. && make
+cmake -DCMAKE_BUILD_TYPE=Release -Dnlohmann_json_DIR=/Users/edwin/Documents/work/Paradigm/json/install/share/cmake/nlohmann_json .. && make

@@ -16,16 +16,17 @@ class Account
     Account( const starkware::PrimeFieldElement& theAddress, const std::string& theChainId, const KeyPair& theKeyPair );
     Account( const starkware::PrimeFieldElement& theAddress, const Uint256& theChainId, const KeyPair& theKeyPair );
 
+    const Uint256& getChainId() const;
+    const starkware::PrimeFieldElement& getAddress() const;
+    const StarkCurveSigner& getSigner() const;
+
     StarknetDomain createStarknetDomain() const;
     Message createAuthMessage() const;
 
-    std::string getJwtToken(const std::string& url) const;
+    std::string getJwtToken( const std::string& url ) const;
 
   private:
-    template <class T>
-    static void replace(std::string *header, const char* token, T val);
-
-    static void removeLeadingZeroes(std::string* value);
+    static std::string extractJwtToken(const std::string& jsonString);
 
     Uint256 chainId;
     StarkCurveSigner signer;
