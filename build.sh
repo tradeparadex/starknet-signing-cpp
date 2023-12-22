@@ -3,7 +3,7 @@ rm -rf build && mkdir build
 
 # Run conan to install libcurl
 cd ./libs/curlpp
-conan install . --build=missing --s build_type=Release
+conan install . --build=missing -s build_type=Release
 
 # Build whole project
 cd ../../build
