@@ -98,8 +98,7 @@ std::string Account::getJwtToken( const std::string& url ) const
 
     try
     {
-        std::string data = "{}"; // Replace this with your POST request data (if any)
-
+        const std::string data = "{}";
         std::string accountHeader = "PARADEX-STARKNET-ACCOUNT: %1";
         {
             std::ostringstream s;

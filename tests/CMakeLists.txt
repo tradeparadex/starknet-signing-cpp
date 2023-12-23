@@ -13,10 +13,12 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 enable_testing()
 
-include_directories(${CMAKE_SOURCE_DIR}/libs/crypto-cpp/src)
+if(NOT ${WIN_32})
+    list(APPEND OPTIONAL_LIBS pthread)
+endif()
 
 add_executable(test test.cpp TestUtils.cpp)
-target_link_libraries(test signer gtest gtest_main gmock pthread)
+target_link_libraries(test signer gtest gtest_main gmock ${OPTIONAL_LIBS})
 add_test(test test)
 
 add_executable(clientTest ClientTest.cpp)
