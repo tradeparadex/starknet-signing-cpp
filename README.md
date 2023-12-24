@@ -6,6 +6,7 @@
 - Rust
 - Python 3.x
 - conan
+- Installed [nlohmann_json](https://github.com/nlohmann/json/tree/develop#cmake) library
 
 # Conan setup
 In root run 
@@ -18,10 +19,9 @@ In root run
     ```
     git submodule update --init
     ```
-
 2)  Run
     ```
-    ./build.sh
+    ./build.sh <path>/install/share/cmake/nlohmann_json
     ```
 3) The compiled library resides in
    ```
