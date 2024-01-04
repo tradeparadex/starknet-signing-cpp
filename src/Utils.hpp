@@ -45,7 +45,7 @@ constexpr T swapEndian( T u );
 template< size_t N >
 constexpr BigInt< N > swapEndian( const BigInt< N >& val );
 
-constexpr void swapEndian(uint64_t* dest, size_t destLen);
+constexpr void swapEndian( uint64_t* dest, size_t destLen );
 
 template< size_t N, size_t M >
 BigInt< (std::min)( N, M ) > operator&( const BigInt< N >& a, const BigInt< M >& b );
@@ -56,13 +56,18 @@ constexpr std::array< uint64_t, N > bigIntToArray( const BigInt< N >& value );
 template< size_t StrLen >
 BigInt< StrToUint64Len< StrLen >::value > strToBigInt( const char* str );
 
-BigInt< 4 > strToBigInt256( const char* str);
-PrimeFieldElement strToFelt(const char* str, size_t len);
+BigInt< 4 > strToBigInt256( const char* str );
+PrimeFieldElement strToFelt( const char* str, size_t len );
 
 /// string shall be supplied in ascii encoding
 template< size_t StrLen >
 std::array< uint64_t, StrToUint64Len< StrLen >::value > strToUint64Array( const char* str );
 
-void strToUint64ArrayImpl(const char* src, size_t srcLen, uint64_t* dest, size_t destLen);
+void strToUint64ArrayImpl( const char* src, size_t srcLen, uint64_t* dest, size_t destLen );
 
-}
+template< class T >
+void replace( std::string* header, const char* token, T val );
+
+void removeLeadingZeroes( std::string* value );
+
+} // namespace signer

@@ -74,7 +74,7 @@ constexpr BigInt< N > swapEndian( const BigInt< N >& val )
 }
 
 template< size_t N, size_t M >
-BigInt< std::min( N, M ) > operator&( const BigInt< N >& a, const BigInt< M >& b )
+BigInt< (std::min)( N, M ) > operator&( const BigInt< N >& a, const BigInt< M >& b )
 {
     constexpr size_t numMinLimbs = std::min( N, M );
 
@@ -144,6 +144,27 @@ std::array< uint64_t, StrToUint64Len< StrLen >::value > strToUint64Array( const 
     strToUint64ArrayImpl(str, StrLen, arr.data(), len64);
 
     return arr;
+}
+
+/// Replaces token in string
+template< class T >
+void replace( std::string* header, const char* token, T val )
+{
+    constexpr uint8_t numTokenLen = 2;
+
+    std::ostringstream s;
+    s << val;
+
+    // Find the position of "%S" in the original string
+    size_t pos = header->find( token );
+
+    // Check if "%S" was found in the string
+    if( pos == std::string::npos )
+    {
+        throw new std::length_error( "Couldn't find %1" );
+    }
+
+    header->replace( pos, numTokenLen, s.str() );
 }
 
 } // namespace signer

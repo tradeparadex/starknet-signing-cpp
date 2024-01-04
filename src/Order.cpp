@@ -1,5 +1,7 @@
 #include <chrono>
 #include <cstring>
+#include <starkware/crypto/elliptic_curve_constants.h>
+#include <nlohmann/json.hpp>
 
 #include "Order.hpp"
 #include "UtilsImpl.hpp"
@@ -7,7 +9,38 @@
 
 namespace signer
 {
+Order::Order( const std::string& theMarket, OrderSide theOrderSide, OrderType theOrderType, double theSize,
+    const std::optional< Uint256 >& theLimitPrice /* = std::nullopt */, const std::string& theClientId /* = "" */ )
+    : orderSide( theOrderSide )
+    , market( theMarket )
+    , orderType( theOrderType )
+    , size( theSize )
+    , clientId( theClientId )
+{
+    using namespace std::chrono;
 
+    timestamp = duration_cast< milliseconds >( system_clock::now().time_since_epoch() );
+
+    if( orderType == OrderType::Limit && !theLimitPrice.has_value() )
+    {
+        throw new SignerException( "If OrderType::Limit theLimitPrice shall exist" );
+    }
+    limitPrice = theLimitPrice;
+}
+
+// static
+std::string toString( OrderSide side )
+{
+    switch( side )
+    {
+        case OrderSide::Buy:
+            return "BUY";
+        case OrderSide::Sell:
+            return "SELL";
+    }
+}
+
+// static
 starkware::PrimeFieldElement encodeChainSide( OrderSide value )
 {
     using namespace starkware;
@@ -19,6 +52,18 @@ starkware::PrimeFieldElement encodeChainSide( OrderSide value )
             return PrimeFieldElement::FromBigInt( Uint256( 1 ) );
         case OrderSide::Sell:
             return PrimeFieldElement::FromBigInt( Uint256( 2 ) );
+    }
+}
+
+// static
+std::string toString( OrderType side )
+{
+    switch( side )
+    {
+        case OrderType::Market:
+            return "MARKET";
+        case OrderType::Limit:
+            return "LIMIT";
     }
 }
 
@@ -50,24 +95,6 @@ starkware::PrimeFieldElement encodeOrderType( OrderType value )
     }
 }
 
-Order::Order( const std::string& theMarket, OrderSide theOrderSide, OrderType theOrderType, double theSize,
-    const std::optional< Uint256 >& theLimitPrice /* = std::nullopt */)
-    : orderSide( theOrderSide )
-    , market( theMarket )
-    , orderType( theOrderType )
-    , size( theSize )
-{
-    using namespace std::chrono;
-
-    timestamp = duration_cast< milliseconds >( system_clock::now().time_since_epoch() );
-
-    if( orderType == OrderType::Limit && !theLimitPrice.has_value() )
-    {
-        throw new SignerException( "If OrderType::Limit theLimitPrice shall exist" );
-    }
-    limitPrice = theLimitPrice;
-}
-
 Order::Uint256 Order::getChainPrice() const
 {
     if( orderType == OrderType::Market )
@@ -75,12 +102,35 @@ Order::Uint256 Order::getChainPrice() const
         return Uint256( 0 );
     }
 
-    return limitPrice.value();
+    return Uint256::MulMod(limitPrice.value(), 0x5f5e100_Z, GetEcConstants().k_order);
 }
 
-void Order::setTimestamp(std::chrono::milliseconds value)
+void Order::setTimestamp( std::chrono::milliseconds value )
 {
     timestamp = value;
+}
+
+std::chrono::milliseconds Order::getTimeStamp() const
+{
+    return timestamp;
+}
+
+std::string Order::compileOrderRequestPayload( const starkware::Signature& signature ) const
+{
+    std::string signatureVal = "[\"%1\", \"%2\"]";
+    replace( &signatureVal, "%1", signature.first );
+    replace( &signatureVal, "%2", signature.second );
+
+    nlohmann::json payload = { { "market", market }, { "side", toString( orderSide ) }, { "size", std::to_string( size ) },
+        { "type", toString( orderType ) }, { "client_id", clientId }, { "signature", signatureVal },
+        { "signature_timestamp", this->timestamp.count() } };
+
+    if(orderType == OrderType::Limit)
+    {
+        payload["price"] = (*limitPrice).ToStringDec();
+    }
+
+    return payload.dump();
 }
 
 std::vector< starkware::PrimeFieldElement > Order::pedersenEncode() const

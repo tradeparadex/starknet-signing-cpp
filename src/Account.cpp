@@ -1,19 +1,20 @@
-#include <stdexcept>
 #include <iostream>
+
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
+#include <nlohmann/json.hpp>
 
 #include "Account.hpp"
-#include "Utils.hpp"
+#include "UtilsImpl.hpp"
 #include "SignerException.hpp"
 
 namespace signer
 {
 
 Account::Account( const starkware::PrimeFieldElement& theAddress, const std::string& theChainId, const KeyPair& theKeyPair )
-: address( theAddress )
-, signer( StarkCurveSigner( theKeyPair ) )
+    : address( theAddress )
+    , signer( StarkCurveSigner( theKeyPair ) )
 {
     chainId = strToFelt( theChainId.c_str(), theChainId.size() ).ToStandardForm();
 }
@@ -25,59 +26,37 @@ Account::Account( const starkware::PrimeFieldElement& theAddress, const Uint256&
 {
 }
 
+const Uint256& Account::getChainId() const
+{
+    return chainId;
+}
+
+const starkware::PrimeFieldElement& Account::getAddress() const
+{
+    return address;
+}
+
+const StarkCurveSigner& Account::getSigner() const
+{
+    return signer;
+}
+
 StarknetDomain Account::createStarknetDomain() const
 {
     return StarknetDomain( chainId );
 }
 
-// static
-template< class T >
-void Account::replace( std::string* header, const char* token, T val )
+std::string Account::extractJwtToken(const std::string& jsonString)
 {
-    constexpr uint8_t numTokenLen = 2;
-
-    std::ostringstream s;
-    s << val;
-
-    // Find the position of "%S" in the original string
-    size_t pos = header->find( token );
-
-    // Check if "%S" was found in the string
-    if( pos == std::string::npos )
+    try
     {
-        throw new std::length_error( "Couldn't find %1" );
+        auto json = nlohmann::json::parse(jsonString);
+        return json["jwt_token"];
     }
-
-    header->replace( pos, numTokenLen, s.str() );
-}
-
-void Account::removeLeadingZeroes( std::string* value )
-{
-    std::string& hexValue = *value;
-
-    // Check if the first 2 characters are "0x"
-    if( hexValue.length() < 2 || hexValue.substr( 0, 2 ) != "0x" )
+    catch (const nlohmann::json::exception& e)
     {
-        return;
-    }
-
-    size_t startPos = 2;
-
-    // Find the position of the first non-zero character after "0x"
-    while( startPos < hexValue.length() && hexValue[ startPos ] == '0' )
-    {
-        startPos++;
-    }
-
-    // Extract the substring starting from the first non-zero character
-    if( startPos < hexValue.length() )
-    {
-        hexValue = "0x" + hexValue.substr( startPos );
-    }
-    else
-    {
-        // If the entire string is zeros, keep at least one zero.
-        hexValue = "0x0";
+        std::cerr << "Error parsing JSON: " << e.what() << std::endl;
+        return ""; // Return an empty string on error
     }
 }
 
@@ -92,7 +71,7 @@ std::string Account::getJwtToken( const std::string& url ) const
     const Message message( address, std::make_shared< StarknetDomain >( starknetDomain ), std::make_shared< Auth >( auth ) );
     const auto hash = message.hash();
     const auto signature = signer.signMessage( message );
-    
+
     const uint64_t now = auth.getNow().count();
     const uint64_t expiry = auth.getExpiry().count();
 
@@ -145,7 +124,7 @@ std::string Account::getJwtToken( const std::string& url ) const
         request.setOpt( new curlpp::options::WriteStream( &responseStream ) );
         request.perform();
 
-        return responseStream.str();
+        return extractJwtToken(responseStream.str());
     }
     catch( curlpp::RuntimeError& e )
     {

@@ -48,7 +48,7 @@ BigInt< 4 > getSelectorFromName( const char* name, size_t len )
 
     const keccak256 hash = ethash_keccak256( (const uint8_t*)name, len );
     const BigInt< 4 > keccakHashBigInt( signer::to_array( hash.word64s ) );
-    const auto reversed = signer::swapEndian( keccakHashBigInt );
+    const BigInt< 4 > reversed = signer::swapEndian( keccakHashBigInt );
 
     return numMask & reversed;
 }
@@ -108,6 +108,37 @@ constexpr void swapEndian( uint64_t* arr, size_t len )
 
         start++;
         end--;
+    }
+}
+
+/// Removes leading zeros in hex
+void removeLeadingZeroes( std::string* value )
+{
+    std::string& hexValue = *value;
+
+    // Check if the first 2 characters are "0x"
+    if( hexValue.length() < 2 || hexValue.substr( 0, 2 ) != "0x" )
+    {
+        return;
+    }
+
+    size_t startPos = 2;
+
+    // Find the position of the first non-zero character after "0x"
+    while( startPos < hexValue.length() && hexValue[ startPos ] == '0' )
+    {
+        startPos++;
+    }
+
+    // Extract the substring starting from the first non-zero character
+    if( startPos < hexValue.length() )
+    {
+        hexValue = "0x" + hexValue.substr( startPos );
+    }
+    else
+    {
+        // If the entire string is zeros, keep at least one zero.
+        hexValue = "0x0";
     }
 }
 

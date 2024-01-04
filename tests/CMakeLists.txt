@@ -22,4 +22,4 @@ target_link_libraries(test signer gtest gtest_main gmock ${OPTIONAL_LIBS})
 add_test(test test)
 
 add_executable(clientTest ClientTest.cpp)
-target_link_libraries(clientTest curlpp_static signer)
+target_link_libraries(clientTest nlohmann_json::nlohmann_json curlpp_static signer)
