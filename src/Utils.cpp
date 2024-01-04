@@ -48,7 +48,7 @@ BigInt< 4 > getSelectorFromName( const char* name, size_t len )
 
     const keccak256 hash = ethash_keccak256( (const uint8_t*)name, len );
     const BigInt< 4 > keccakHashBigInt( signer::to_array( hash.word64s ) );
-    const auto reversed = signer::swapEndian( keccakHashBigInt );
+    const BigInt< 4 > reversed = signer::swapEndian( keccakHashBigInt );
 
     return numMask & reversed;
 }

@@ -74,7 +74,7 @@ constexpr BigInt< N > swapEndian( const BigInt< N >& val )
 }
 
 template< size_t N, size_t M >
-BigInt< std::min( N, M ) > operator&( const BigInt< N >& a, const BigInt< M >& b )
+BigInt< (std::min)( N, M ) > operator&( const BigInt< N >& a, const BigInt< M >& b )
 {
     constexpr size_t numMinLimbs = std::min( N, M );
 
