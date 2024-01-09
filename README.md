@@ -8,7 +8,14 @@ The signature is passed with every authertication request and order and proves t
 ## Why is it useful
 Trading programs written in C++ provide superior performance vs other languages. For that reason most of low latency traders use C++.
 This library will allow them to integrate with Paradex and improve quality of liquidity on Paradex' order books.
-This in turn will increase trading volume and transactions on Paradex, StarkNet and Ethereum networks.
+This in turn will increase trading volume and transactions on Paradex, StarkNet and Ethereum networks.  
+Average latencies of signing a Paradex order using different language libraries:
+| Language | Average latency milliseconds |
+| ----------- | ----------- |
+| Python with C extension | 37 |
+| Go | 1.7 |
+| Rust | 0.2 |
+| C++ | 0.4 |
 
 ## What's inside
 C++ library using 3rd party C++ libraries and 3rd party StarkNet Rust library: <https://github.com/xJonathanLEI/starknet-rs>.
