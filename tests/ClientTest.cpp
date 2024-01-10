@@ -7,6 +7,13 @@
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
 
+// Callback function to write the response to a string
+size_t writeCallback(char* ptr, size_t size, size_t nmemb, std::string* response) {
+    size_t totalSize = size * nmemb;
+    response->append(ptr, totalSize);
+    return totalSize;
+}
+
 int postOrder(const signer::Account& account, const std::string& jwtToken)
 {
     using namespace starkware;
@@ -16,7 +23,7 @@ int postOrder(const signer::Account& account, const std::string& jwtToken)
     const StarkCurveSigner& signer = account.getSigner();
 
     StarknetDomain starknetDomain( account.getChainId() );
-    const Order order( "ETH-USD-PERP", OrderSide::Buy, OrderType::Limit, 0.1, 0x5f5e100_Z, "mock" );
+    const Order order( "ETH-USD-PERP", OrderSide::Buy, OrderType::Market, 0.1, std::nullopt, "123454321" );
     const Message message( address, std::make_shared< StarknetDomain >( starknetDomain ), std::make_shared< Order >( order ) );
 
     const auto h = message.hash();
@@ -42,8 +49,15 @@ int postOrder(const signer::Account& account, const std::string& jwtToken)
         request.setOpt( new curlpp::options::PostFields( payload ) );
         request.setOpt( new curlpp::options::PostFieldSize( payload.length() ) );
 
+        // Set the custom write function to capture the response
+        std::string response;
+        request.setOpt(new curlpp::options::WriteFunction(std::bind(&writeCallback, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, &response)));
+
         // Perform the request
         request.perform();
+
+        // Print the captured response
+        std::cout << "Response: " << response << std::endl;
 
         // Cleanup cURLpp
         curlpp::terminate();
